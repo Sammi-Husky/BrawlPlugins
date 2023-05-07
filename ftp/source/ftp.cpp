@@ -10,12 +10,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strtoul.h>
+#include <sy_core.h>
 
 #include "debug.h"
 #include "ftp.h"
 #include "ftp_session.h"
 #include "ftp_utils.h"
-#include "sy_core.h"
 
 #define STACK_SIZE 0x4000
 

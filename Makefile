@@ -6,18 +6,23 @@ ifeq ($(strip $(DEVKITPRO)),)
 $(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to>/devkitpro")
 endif
 
+export TOOLS 	:= $(CURDIR)/tools
+export LIB 		:= $(CURDIR)/lib
+
+
+
 all: AsyncRSP.rel ftp.rel NetLog.rel
 
 AsyncRSP.rel:
-	@cd AsyncRSP && make
+	$(MAKE) -C AsyncRSP
 
 ftp.rel:
-	@cd ftp && make
+	$(MAKE) -s -C ftp
 
 NetLog.rel:
-	@cd NetLog && make
+	$(MAKE) -s -C NetLog
 
 clean:
-	@cd AsyncRSP && make clean
-	@cd ftp && make clean
-	@cd NetLog && make clean
+	$(MAKE) -s -C AsyncRSP clean
+	$(MAKE) -s -C ftp clean
+	$(MAKE) -s -C NetLog clean

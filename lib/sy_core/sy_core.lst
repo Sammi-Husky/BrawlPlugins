@@ -1,0 +1,9 @@
+224,1,0000036c:syInlineHook__11SyringeCoreFUlPCvi
+224,1,00000584:syInlineHookRel__11SyringeCoreFUlPCvi
+224,1,00000588:sySimpleHook__11SyringeCoreFUlPCvi
+224,1,00000594:sySimpleHookRel__11SyringeCoreFUlPCvi
+224,1,000005a0:syReplaceFunc__11SyringeCoreFUlPCvPPvi
+224,1,00000678:syReplaceFuncRel__11SyringeCoreFUlPCvPPvi
+224,1,0000067c:syReplaceFunc__11SyringeCoreFPCvPCvPPvi
+224,1,00000768:EncodeBranch__12SyringeUtilsFUlUlb
+224,1,00000794:EncodeBranch__12SyringeUtilsFUlUl

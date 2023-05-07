@@ -7,10 +7,10 @@
 #include <printf.h>
 #include <stdarg.h>
 #include <string.h>
+#include <sy_core.h>
 
 #include "debug.h"
 #include "net_log.h"
-#include "sy_core.h"
 
 #define AF_INET 0x2
 #define SOCK_DGRAM 0x2

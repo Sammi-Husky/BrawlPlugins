@@ -3,11 +3,11 @@
 #include <modules.h>
 #include <mu/mu_sel_char_player_area.h>
 #include <nw4r/g3d/g3d_resfile.h>
+#include <sy_core.h>
 #include <types.h>
 #include <vector.h>
 
 #include "sel_char_load_thread.h"
-#include "sy_core.h"
 
 using namespace nw4r::g3d;
 
