@@ -52,8 +52,8 @@ namespace CSSHooks {
         if (thread->m_dataReady == false)
         {
             thread->requestLoad(charKind);
-            area->muObject->setFrameTex(0);
-            return NULL;
+            // area->muObject->setFrameTex(0);
+            return &area->charPicRes;
         }
         else
         {
