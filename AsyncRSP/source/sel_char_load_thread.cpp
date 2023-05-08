@@ -59,9 +59,6 @@ void* selCharLoadThread::main(void* arg)
 
             thread->m_handle.release();
         }
-
-        // Sleep thread until next vsync
-        VIWaitForRetrace();
     }
 
     return NULL;
