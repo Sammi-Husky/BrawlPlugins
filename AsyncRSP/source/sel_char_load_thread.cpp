@@ -55,7 +55,7 @@ void* selCharLoadThread::main(void* arg)
                              area->curCostume,
                              area->isTeamBattle(),
                              area->teamColor,
-                             area->_0x1C4);
+                             area->curTeamSet);
 
             thread->m_handle.release();
         }
