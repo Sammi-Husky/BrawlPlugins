@@ -53,9 +53,9 @@ void* selCharLoadThread::main(void* arg)
             area->setCharPic(area->selectedChar,
                              area->playerKind,
                              area->curCostume,
-                             false,
+                             area->isTeamBattle(),
                              area->teamColor,
-                             0);
+                             area->_0x1C4);
 
             thread->m_handle.release();
         }
