@@ -1,6 +1,10 @@
+#include <CXCompression.h>
 #include <OS/OSCache.h>
+#include <OS/OSError.h>
+#include <gf/gf_archive.h>
 #include <memory.h>
 #include <modules.h>
+#include <mu/mu_menu.h>
 #include <mu/mu_sel_char_player_area.h>
 #include <nw4r/g3d/g3d_resfile.h>
 #include <sy_core.h>
@@ -13,7 +17,9 @@ using namespace nw4r::g3d;
 
 namespace CSSHooks {
 
+    extern gfArchive* selCharArchive;
     selCharLoadThread* threads[4];
+
     void createThreads(muSelCharPlayerArea* area)
     {
         selCharLoadThread* thread = new (Heaps::Thread) selCharLoadThread(area);
@@ -42,38 +48,65 @@ namespace CSSHooks {
                 b setCharPic__cont // continue where we left off
     }
     // clang-format on
-
-    ResFile* getCharPicTexResFile(muSelCharPlayerArea* area, u32 charKind)
+    ResFile* getCharPicTexResFile(register muSelCharPlayerArea* area, u32 charKind)
     {
         selCharLoadThread* thread = threads[area->areaIdx];
 
-        // if data hasn't been loaded, use transparent texture
-        // and request data be loaded by load thread
-        if (thread->m_dataReady == false)
+        // Handles conversions for poketrio and special slots
+        int id = muMenu::exchangeMuSelchkind2MuStockchkind(charKind);
+        id = muMenu::getStockFrameID(id);
+
+        // if thread has loaded the data
+        if (!thread->m_dataReady)
         {
-            thread->requestLoad(charKind);
-            // area->muObject->setFrameTex(0);
-            return &area->charPicRes;
+            // check if CSP exists in archive first. We do this check
+            // when thread hasn't loaded data because this function
+            // will get called again by the load thread when it's ready
+            // and we don't want to check the archive a 2nd time
+            void* data = selCharArchive->getData(Data_Type_Misc, id, 0xfffe);
+            if (data)
+            {
+                CXUncompressLZ(data, (void*)area->charPicData);
+            }
+            else
+            {
+                // if it does not, request thread
+                // to load RSP and return
+                asm {
+                    lwz r3, 0x404(area);
+                    lwz r4, 0xC0(area);
+                    lwz r4, 0x10(r4);
+                    lwz r12, 0x0(r3);
+                    lwz r12, 0x3c(r12);
+                    mtctr r12;
+                    bctrl;
+                }
+                area->muObject->setFrameTex(0);
+                thread->requestLoad(charKind);
+                OSUnlockMutex(&thread->m_mutex);
+                return &area->charPicRes;
+            }
         }
-        else
-        {
-            ResFile* resFile = &area->charPicRes;
 
-            // flush cache
-            DCFlushRange(area->charPicData, 0x40000);
+        OSLockMutex(&thread->m_mutex);
 
-            // set ResFile to point to filedata
-            area->charPicRes = (nw4r::g3d::ResFile)area->charPicData;
+        ResFile* resFile = &area->charPicRes;
 
-            // init resFile and return
-            nw4r::g3d::ResFile::Init(resFile);
+        // flush cache
+        DCFlushRange(area->charPicData, 0x40000);
 
-            // to ensure we load more than just
-            // the first hovered character
-            thread->reset();
+        // set ResFile to point to filedata
+        area->charPicRes = (ResFile)area->charPicData;
 
-            return resFile;
-        }
+        // init resFile and return
+        ResFile::Init(resFile);
+
+        // to ensure we load more than just
+        // the first hovered character
+        thread->reset();
+
+        OSUnlockMutex(&thread->m_mutex);
+        return resFile;
     }
 
     muSelCharPlayerArea* (*_destroyPlayerAreas)(void*, int);

@@ -1,3 +1,7 @@
+#include <gf/gf_file_io_request.h>
+#include <gf/gf_memory_pool.h>
+#include <sy_core.h>
+
 #include "css_hooks.h"
 
 namespace Syringe {
@@ -10,6 +14,11 @@ namespace Syringe {
     void _prolog();
     void _epilog();
     void _unresolved();
+    }
+
+    float Test(int i)
+    {
+        return (float)i;
     }
 
     void _prolog()
