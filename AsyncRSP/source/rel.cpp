@@ -16,11 +16,6 @@ namespace Syringe {
     void _unresolved();
     }
 
-    float Test(int i)
-    {
-        return (float)i;
-    }
-
     void _prolog()
     {
         // Run global constructors
