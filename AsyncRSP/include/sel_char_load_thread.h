@@ -1,6 +1,5 @@
 #pragma once
 
-#include <OS/OSMutex.h>
 #include <OS/OSThread.h>
 #include <gf/gf_file_io_handle.h>
 #include <mu/mu_sel_char_player_area.h>
@@ -15,10 +14,8 @@ protected:
     bool m_shouldExit;
 
 public:
-    OSMutex m_mutex;
     bool m_isRunning;
     bool m_dataReady;
-    // void* m_dataBuffer;
 
     selCharLoadThread(muSelCharPlayerArea* area);
     void requestLoad(int charKind);

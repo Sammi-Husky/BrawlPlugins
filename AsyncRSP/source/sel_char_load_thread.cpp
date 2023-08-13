@@ -14,7 +14,6 @@ void* selCharLoadThread::main(void* arg)
 
     while (!thread->m_shouldExit)
     {
-        OSLockMutex(&thread->m_mutex);
         if (thread->m_toLoad != -1)
         {
             charKind = thread->m_toLoad;
@@ -46,7 +45,7 @@ void* selCharLoadThread::main(void* arg)
             thread->m_dataReady = true;
             thread->m_isRunning = false;
 
-            area->setCharPic(area->selectedChar,
+            area->setCharPic(charKind,
                              area->playerKind,
                              area->curCostume,
                              area->isTeamBattle(),
@@ -55,7 +54,6 @@ void* selCharLoadThread::main(void* arg)
 
             thread->m_handle.release();
         }
-        OSUnlockMutex(&thread->m_mutex);
     }
 
     return NULL;
@@ -68,8 +66,6 @@ selCharLoadThread::selCharLoadThread(muSelCharPlayerArea* area)
     m_dataReady = false;
     m_isRunning = false;
     m_shouldExit = false;
-    // m_dataBuffer = new (Heaps::MenuResource) char[0x40000];
-    OSInitMutex(&m_mutex);
 
     OSCreateThread(&m_thread, selCharLoadThread::main, this, m_stack + sizeof(m_stack), sizeof(m_stack), 31, 0);
 }
@@ -103,5 +99,4 @@ selCharLoadThread::~selCharLoadThread()
     m_shouldExit = true;
     OSJoinThread(&m_thread, NULL);
     this->m_handle.release();
-    // free(this->m_dataBuffer);
 }

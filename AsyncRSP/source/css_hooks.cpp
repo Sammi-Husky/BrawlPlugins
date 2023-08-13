@@ -27,38 +27,17 @@ namespace CSSHooks {
         thread->start();
     }
 
-    // clang-format off
-
-    // Hacky fix to force setCharPic to return
-    // if data is still loading
-    extern void setCharPic__end();
-    extern void setCharPic__cont();
-    asm void setCharPicFix()
-    {
-            nofralloc // don't need stack frame
-
-            cmpwi r3, 0
-            bne skip
-            
-            mr r3, r30
-            b setCharPic__end // branch to end of original func
-            
-            skip:
-                mr r26, r3
-                b setCharPic__cont // continue where we left off
-    }
-    // clang-format on
     ResFile* getCharPicTexResFile(register muSelCharPlayerArea* area, u32 charKind)
     {
         selCharLoadThread* thread = threads[area->areaIdx];
 
-        // Handles conversions for poketrio and special slots
-        int id = muMenu::exchangeMuSelchkind2MuStockchkind(charKind);
-        id = muMenu::getStockFrameID(id);
-
         // if thread has loaded the data
         if (!thread->m_dataReady)
         {
+            // Handles conversions for poketrio and special slots
+            int id = muMenu::exchangeMuSelchkind2MuStockchkind(charKind);
+            id = muMenu::getStockFrameID(id);
+
             // check if CSP exists in archive first. We do this check
             // when thread hasn't loaded data because this function
             // will get called again by the load thread when it's ready
@@ -81,14 +60,10 @@ namespace CSSHooks {
                     mtctr r12;
                     bctrl;
                 }
-                area->muObject->setFrameTex(0);
                 thread->requestLoad(charKind);
-                OSUnlockMutex(&thread->m_mutex);
                 return &area->charPicRes;
             }
         }
-
-        OSLockMutex(&thread->m_mutex);
 
         ResFile* resFile = &area->charPicRes;
 
@@ -105,7 +80,6 @@ namespace CSSHooks {
         // the first hovered character
         thread->reset();
 
-        OSUnlockMutex(&thread->m_mutex);
         return resFile;
     }
 
@@ -129,10 +103,6 @@ namespace CSSHooks {
                                       reinterpret_cast<void*>(getCharPicTexResFile),
                                       NULL,
                                       Modules::SORA_MENU_SEL_CHAR);
-
-        // simple asm hook to force setCharPic to
-        // return if data is still loading
-        SyringeCore::sySimpleHook(0x806975a8, reinterpret_cast<void*>(setCharPicFix), Modules::SORA_MENU_SEL_CHAR);
 
         // hook to clean up our mess when unloading CSS
         SyringeCore::syReplaceFunc(0x806937bc,
