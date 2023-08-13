@@ -1,6 +1,5 @@
 #include <CXCompression.h>
 #include <OS/OSCache.h>
-#include <OS/OSError.h>
 #include <gf/gf_archive.h>
 #include <memory.h>
 #include <modules.h>
@@ -27,11 +26,12 @@ namespace CSSHooks {
         thread->start();
     }
 
+    // NOTE: This hook gets triggered again by the load thread since
+    // the thread calls `setCharPic` when data is finished loading
     ResFile* getCharPicTexResFile(register muSelCharPlayerArea* area, u32 charKind)
     {
         selCharLoadThread* thread = threads[area->areaIdx];
 
-        // if thread has loaded the data
         if (!thread->m_dataReady)
         {
             // Handles conversions for poketrio and special slots
@@ -43,14 +43,10 @@ namespace CSSHooks {
             // will get called again by the load thread when it's ready
             // and we don't want to check the archive a 2nd time
             void* data = selCharArchive->getData(Data_Type_Misc, id, 0xfffe);
-            if (data)
+            if (!data)
             {
-                CXUncompressLZ(data, (void*)area->charPicData);
-            }
-            else
-            {
-                // if it does not, request thread
-                // to load RSP and return
+                // if data doesn't exist in archive
+                // request to load the RSP instead
                 asm {
                     lwz r3, 0x404(area);
                     lwz r4, 0xC0(area);
@@ -63,6 +59,9 @@ namespace CSSHooks {
                 thread->requestLoad(charKind);
                 return &area->charPicRes;
             }
+
+            // CSPs in the archive are compressed
+            CXUncompressLZ(data, (void*)area->charPicData);
         }
 
         ResFile* resFile = &area->charPicRes;
@@ -90,10 +89,7 @@ namespace CSSHooks {
         delete threads[object->areaIdx];
         threads[object->areaIdx] = 0;
 
-        // call base function first
-        muSelCharPlayerArea* ret = _destroyPlayerAreas(object, external);
-
-        return ret;
+        return _destroyPlayerAreas(object, external);
     }
 
     void InstallHooks()
