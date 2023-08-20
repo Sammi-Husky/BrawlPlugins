@@ -10,6 +10,19 @@ endif
 include $(DEVKITPPC)/wii_rules
 
 #---------------------------------------------------------------------------------
+# TOOLS is a directory to the tools folder containing MWCC and other programs
+# LIB is a directory to the lib folder
+#---------------------------------------------------------------------------------
+
+ifeq ($(strip $(TOOLS)),)
+TOOLS	:= $(TOPDIR)/../tools
+endif
+
+ifeq ($(strip $(LIB)),)
+LIB	:= $(CURDIR)/../lib
+endif
+
+#---------------------------------------------------------------------------------
 # TARGET is the name of the output
 # BUILD is the directory where object files & intermediate files will be placed
 # SOURCES is a list of directories containing source code
@@ -19,7 +32,7 @@ include $(DEVKITPPC)/wii_rules
 TARGET		:=	NetLog
 RELID		:=  201
 BUILD		:=	build
-SOURCES		:=	source $(wildcard source/*) ../lib/BrawlHeaders/PowerPC_EABI_Support/Runtime/Src/
+SOURCES		:=	source $(wildcard source/*) ../lib/BrawlHeaders/PowerPC_EABI_Support/Runtime/Src/ # have to hardcode lib dir here???????
 INCLUDES	:=	include
 
 #---------------------------------------------------------------------------------
@@ -55,7 +68,7 @@ export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 #---------------------------------------------------------------------------------
 # automatically build a list of object files for our project
 #---------------------------------------------------------------------------------
-CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c))) 
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 sFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
@@ -81,7 +94,7 @@ export LCF			:= $(TOPDIR)/rel.lcf
 #---------------------------------------------------------------------------------
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 			-I$(CURDIR)/$(BUILD) -I- \
-			-I$(LIB)/PowerPC_EABI_Support/Runtime/Inc \
+			-I$(LIB)/BrawlHeaders/PowerPC_EABI_Support/Runtime/Inc \
 			-I$(LIB)/BrawlHeaders/Brawl/Include \
 			-I$(LIB)/BrawlHeaders/nw4r/include \
 			-I$(LIB)/BrawlHeaders/OpenRVL/include/ \

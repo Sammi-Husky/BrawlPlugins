@@ -10,21 +10,21 @@ export TOOLS 	:= $(CURDIR)/tools
 export LIB 		:= $(CURDIR)/lib
 
 
-.PHONY: all clean
+.PHONY: all AsyncRSP ftp NetLog
 
-all: AsyncRSP.rel ftp.rel NetLog.rel
+all: AsyncRSP ftp NetLog
 
-AsyncRSP.rel:
+AsyncRSP:
 	$(MAKE) -C AsyncRSP
-	@cp AsyncRSP/$@ $@
+	@cp AsyncRSP/$@.rel $@.rel
 
-ftp.rel:
+ftp:
 	$(MAKE) -s -C ftp
-	@cp ftp/$@ $@
+	@cp ftp/$@.rel $@.rel
 
-NetLog.rel:
+NetLog:
 	$(MAKE) -s -C NetLog
-	@cp NetLog/$@ $@
+	@cp NetLog/$@.rel $@.rel
 
 clean:
 	@rm ./*.rel
