@@ -101,12 +101,12 @@ namespace CSSHooks {
                                       Modules::SORA_MENU_SEL_CHAR);
 
         // hook to clean up our mess when unloading CSS
-        SyringeCore::syReplaceFunc(0x806937bc,
-                                   reinterpret_cast<void*>(destroyPlayerAreas),
-                                   (void**)&_destroyPlayerAreas,
-                                   Modules::SORA_MENU_SEL_CHAR);
+        SyringeCore::syReplaceFuncRel(0x10EF8,
+                                      reinterpret_cast<void*>(destroyPlayerAreas),
+                                      (void**)&_destroyPlayerAreas,
+                                      Modules::SORA_MENU_SEL_CHAR);
 
         // hook to create threads when booting the CSS
-        SyringeCore::syInlineHook(0x80685DE8, reinterpret_cast<void*>(createThreads), Modules::SORA_MENU_SEL_CHAR);
+        SyringeCore::syInlineHookRel(0x3524, reinterpret_cast<void*>(createThreads), Modules::SORA_MENU_SEL_CHAR);
     }
 } // namespace CSSHooks
