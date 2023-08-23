@@ -10,13 +10,17 @@ export TOOLS 	:= $(CURDIR)/tools
 export LIB 		:= $(CURDIR)/lib
 
 
-.PHONY: all AsyncRSP ftp NetLog
+.PHONY: all AsyncRSP CodeMenu ftp NetLog
 
-all: AsyncRSP ftp NetLog
+all: AsyncRSP CodeMenu ftp NetLog
 
 AsyncRSP:
 	$(MAKE) -C AsyncRSP
 	@cp AsyncRSP/$@.rel $@.rel
+
+CodeMenu:
+	$(MAKE) -s -C ftp
+	@cp ftp/$@.rel $@.rel
 
 ftp:
 	$(MAKE) -s -C ftp
@@ -29,5 +33,6 @@ NetLog:
 clean:
 	@rm ./*.rel
 	$(MAKE) -s -C AsyncRSP clean
+	$(MAKE) -s -C CodeMenu clean
 	$(MAKE) -s -C ftp clean
 	$(MAKE) -s -C NetLog clean
