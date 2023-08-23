@@ -19,8 +19,8 @@ AsyncRSP:
 	@cp AsyncRSP/$@.rel $@.rel
 
 CodeMenu:
-	$(MAKE) -s -C ftp
-	@cp ftp/$@.rel $@.rel
+	$(MAKE) -s -C CodeMenu
+	@cp CodeMenu/$@.rel $@.rel
 
 ftp:
 	$(MAKE) -s -C ftp
