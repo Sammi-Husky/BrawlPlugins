@@ -37,14 +37,36 @@ void mu_CodeMenu::Initialize()
 		lwz r3,-0x43e8(r13);
 		bla 0x026C78;		// setup heap 
 	}
-	char* cmPackage = "menu3/CodeMenu.pac"; 
-	gfFileIOHandle package;
-	package.read(cmPackage,Heaps::CodeMenu,0);
-	register void* packageLoc = package.getBuffer();
-	package.release();
+	
+	// load in the pac file containing the contents
+	gfFileIOHandle packageLoad;
+	packageLoad.read("menu3/CodeMenu.pac",Heaps::CodeMenu,0);
+	register void* packageLoc = packageLoad.getBuffer();
+	register int* packagePart = 0;
+	
+	//gfArchive* package = new (Heaps::CodeMenu) gfArchive;
+
+	//ARCNodeType fileType;
+	//fileType = Data_Type_Misc;
+	packagePart = mu_CodeMenu::quickArcAccess(packageLoc,Data_Type_Misc,1,3);
+
+	
 	asm {
 			lis r4, 0x8049;
-			stw packageLoc, 0x4D38(r4); 	
+			stw packageLoc, 0x4D38(r4); 
+			stw packagePart, 0x4D3C(r4);
 	}
+	
+	packageLoad.release();	
+};
+
+int* mu_CodeMenu::quickArcAccess(void* packageLoc, ARCNodeType fileType, int fileIndex, int fileGroup)
+{
+	void* pointerToPart;
+	gfArchive* package = new (Heaps::CodeMenu) gfArchive;
+	package->setFileImage(packageLoc,0x10000,Heaps::CodeMenu);	
+	pointerToPart = package->getData(fileGroup,fileType,fileIndex,0xFFFE);
+	delete package;
+	return (int*)pointerToPart;
 };
 

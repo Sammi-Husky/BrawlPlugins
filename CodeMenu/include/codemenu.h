@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gf/gf_archive.h>
+
 #define CM_HEAPSIZE   0x10000    //Test heap size
 #define CM_HEAPSTART  0x93600000 //Test start point
 #define CM_HEAPMEM    1		     //Use MEM-2 (1)
@@ -9,13 +11,10 @@
 	
 
 class mu_CodeMenu {
-	private:
-		static int* packagePtr;
-		static char* cmPackage;
 	public:
 		
 		static void Initialize();	
-		
+		static int* quickArcAccess(void* packageLoc, ARCNodeType fileType, int fileIndex = 0, int fileGroup = 0);
 };
 
 
