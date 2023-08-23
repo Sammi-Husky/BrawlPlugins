@@ -13,8 +13,16 @@
 
 using namespace nw4r::g3d;
 
+void * cmComponents[4];
+void * cmFunctions[2] =
+{
+	mu_CodeMenu::cmArcAccess,	
+	0
+};
+
 void mu_CodeMenu::Initialize()
 {
+	
 	register const char* heapname = "CodeMenu";
 	register int heapStart; heapStart = CM_HEAPSTART;
 	register int heapSize; heapSize = CM_HEAPSIZE;
@@ -41,28 +49,39 @@ void mu_CodeMenu::Initialize()
 	// load in the pac file containing the contents
 	gfFileIOHandle packageLoad;
 	packageLoad.read("menu3/CodeMenu.pac",Heaps::CodeMenu,0);
-	register void* packageLoc = packageLoad.getBuffer();
-	register int* packagePart = 0;
+	cmComponents[0] = packageLoad.getBuffer();
+	cmComponents[1] = &cmFunctions;
 	
 	//gfArchive* package = new (Heaps::CodeMenu) gfArchive;
 
 	//ARCNodeType fileType;
 	//fileType = Data_Type_Misc;
-	packagePart = mu_CodeMenu::quickArcAccess(packageLoc,Data_Type_Misc,1,3);
+	//packagePart = mu_CodeMenu::cmArcAccess(Data_Type_Misc,1,3,packageLoc);
+	//register void* packageLoc = cmCom
 
-	
+
+	register void* cmSetupLoc = &cmComponents;
+		asm {
+			lis r4, 0x8049;
+			stw cmSetupLoc, 0x4D38(r4);
+	}
+	/*
 	asm {
 			lis r4, 0x8049;
 			stw packageLoc, 0x4D38(r4); 
 			stw packagePart, 0x4D3C(r4);
 	}
-	
+	*/
 	packageLoad.release();	
 };
 
-int* mu_CodeMenu::quickArcAccess(void* packageLoc, ARCNodeType fileType, int fileIndex, int fileGroup)
+int* mu_CodeMenu::cmArcAccess(ARCNodeType fileType, int fileIndex, int fileGroup, void* packageLoc)
 {
 	void* pointerToPart;
+	if (packageLoc == 0)
+	{
+		packageLoc = cmComponents[0]; //Default to the Code Menu but allow this code to be plastic enough to work with other archives!
+	};
 	gfArchive* package = new (Heaps::CodeMenu) gfArchive;
 	package->setFileImage(packageLoc,0x10000,Heaps::CodeMenu);	
 	pointerToPart = package->getData(fileGroup,fileType,fileIndex,0xFFFE);
