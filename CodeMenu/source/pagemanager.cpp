@@ -22,25 +22,6 @@ void mu_cmPageManager::update()
 	{
 		mu_cmPageManager::cmActive = false;
 	}
-	
-	/*
-	
-	
-	if (cmiActive[0] && !cmActive)	//is the code menu active but no models are rendered?
-	{
-		reinterpret_cast<char*>cmiActive[2]++;
-		mu_cmPageManager::cmActive = true;
-	}
-	else if (!cmiActive[0] && cmActive)	//is the code menu deactivated but models for the menu are still rendering?
-	{
-		mu_cmPageManager::cmActive = false;
-	}
-	else
-	{
-		
-	}
-	*/
-
 };
 
 void mu_cmPageManager::init(void* cmAccess)
