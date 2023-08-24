@@ -1,11 +1,15 @@
 #pragma once
 
+#include <mu/mu_object.h>
+#include "codemenu.h"
+
 #define MIN_OPTION_TIME 20.0f	//The amount of time spent at a minimum on a single selection option
 
 class mu_cmPageManager
 {
 	float timeIdle;
 	bool cmActive;
+	MuObject* cmPageObjectTest;
 	
 	static int pageNo;
 	static int currentLayer;
@@ -15,6 +19,7 @@ class mu_cmPageManager
 	static int optionNo;
 	static int optionCount;
 	void* cmInfo;
+	mu_CodeMenu* cmMain;
 	
 public:
 	void init(void* cmAccess);	

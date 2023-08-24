@@ -103,6 +103,7 @@ void mu_CodeMenu::Initialize()
 			stw cmSetupLoc, 0x4D38(r4);
 	}
 	pagemanager = new (Heaps::CodeMenu) mu_cmPageManager;
+	
 	pagemanager->init(&cmComponents);
 	
 	packageLoad.release();

@@ -4,7 +4,7 @@
 #include <string.h>
 #include "page.h"
 
-#define CM_HEAPSIZE   0x10000    //Test heap size
+#define CM_HEAPSIZE   0xF0000    //Test heap size
 #define CM_HEAPSTART  0x93600000 //Test start point
 #define CM_HEAPMEM    1		     //Use MEM-2 (1)
 #define CM_HEAPREGLOC 0x80494D28 // 80494D18 has Syringe, 80494D08 should have BrawlX
