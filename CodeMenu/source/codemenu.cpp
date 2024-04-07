@@ -4,21 +4,67 @@
 #include <gf/gf_file_io.h>
 #include <memory.h>
 #include <modules.h>
+#include <ms/ms_message.h>
 #include <nw4r/g3d/g3d_resfile.h>
 #include <sy_core.h>
 #include <types.h>
 #include <vector.h>
 
 #include "codemenu.h"
+#include "pagemanager.h"
 
 using namespace nw4r::g3d;
 
-void * cmComponents[4];
+//CODE MENU FUNCTIONS ACCESSIBLE GAME-WIDE
+
 void * cmFunctions[2] =
 {
 	mu_CodeMenu::cmArcAccess,	
-	0
+	mu_CodeMenu::Update
 };
+void * cmModels[32];
+
+void * cmi_DrawDI;
+
+//CODE MENU INFO
+
+char cmi_General[3];// = {0,0,0};
+char cmi_Match[2];
+char cmi_Extra[2];
+char cmi_MatchFinish[4];
+char cmi_GameMechanics[32];
+
+
+playerPort cmi_Player1, cmi_Player2, cmi_Player3, cmi_Player4;
+debugSettings cmi_Debug;
+flightSettings cmi_Flight = { {2.0, 2.0},{2.0,2.0},{1.0,1.0},{1.0,1.0}};
+
+
+void * cmInfo[12] =
+{
+	&cmi_General,
+	&cmi_Match,
+	&cmi_Extra,
+	&cmi_MatchFinish,
+	&cmi_Player1,
+	&cmi_Player2,
+	&cmi_Player3,
+	&cmi_Player4,
+	&cmi_GameMechanics,
+	&cmi_Flight,
+	&cmi_Debug,
+	&cmi_DrawDI
+};
+
+void * cmComponents[4] =
+{
+	0,
+	&cmFunctions,
+	&cmModels,
+	&cmInfo
+};
+
+mu_cmPageManager* pagemanager;
 
 void mu_CodeMenu::Initialize()
 {
@@ -50,29 +96,25 @@ void mu_CodeMenu::Initialize()
 	gfFileIOHandle packageLoad;
 	packageLoad.read("menu3/CodeMenu.pac",Heaps::CodeMenu,0);
 	cmComponents[0] = packageLoad.getBuffer();
-	cmComponents[1] = &cmFunctions;
-	
-	//gfArchive* package = new (Heaps::CodeMenu) gfArchive;
-
-	//ARCNodeType fileType;
-	//fileType = Data_Type_Misc;
-	//packagePart = mu_CodeMenu::cmArcAccess(Data_Type_Misc,1,3,packageLoc);
-	//register void* packageLoc = cmCom
-
 
 	register void* cmSetupLoc = &cmComponents;
 		asm {
 			lis r4, 0x8049;
 			stw cmSetupLoc, 0x4D38(r4);
 	}
-	/*
-	asm {
-			lis r4, 0x8049;
-			stw packageLoc, 0x4D38(r4); 
-			stw packagePart, 0x4D3C(r4);
-	}
-	*/
-	packageLoad.release();	
+	pagemanager = new (Heaps::CodeMenu) mu_cmPageManager;
+	
+	pagemanager->init(&cmComponents);
+	
+	packageLoad.release();
+
+	SyringeCore::syInlineHookRel(0x6910, reinterpret_cast<void*>(mu_CodeMenu::Update), Modules::SORA_MENU_SEL_CHAR);
+	
+};
+
+void mu_CodeMenu::Destroy()
+{
+	delete pagemanager;	
 };
 
 int* mu_CodeMenu::cmArcAccess(ARCNodeType fileType, int fileIndex, int fileGroup, void* packageLoc)
@@ -89,3 +131,8 @@ int* mu_CodeMenu::cmArcAccess(ARCNodeType fileType, int fileIndex, int fileGroup
 	return (int*)pointerToPart;
 };
 
+void mu_CodeMenu::Update()
+{
+	pagemanager->update();
+	
+};

@@ -36,6 +36,8 @@ namespace Syringe {
         {
             (*dtor)();
         }
+		
+		mu_CodeMenu::Destroy();
     }
 
     void _unresolved(void)
