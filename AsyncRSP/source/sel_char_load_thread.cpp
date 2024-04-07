@@ -1,4 +1,5 @@
 #include "sel_char_load_thread.h"
+#include <OS/OSCache.h>
 #include <VI/vi.h>
 #include <memory.h>
 #include <mu/mu_menu.h>
@@ -40,7 +41,7 @@ void* selCharLoadThread::main(void* arg)
         }
 
         // Data is finished loading
-        if (thread->m_handle.isReady() && thread->m_isRunning)
+        if (thread->m_isRunning && thread->m_handle.isReady())
         {
             thread->m_dataReady = true;
             thread->m_isRunning = false;
@@ -54,6 +55,7 @@ void* selCharLoadThread::main(void* arg)
 
             thread->m_handle.release();
         }
+        VIWaitForRetrace();
     }
 
     return NULL;

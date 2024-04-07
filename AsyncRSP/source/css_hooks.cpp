@@ -26,6 +26,28 @@ namespace CSSHooks {
         thread->start();
     }
 
+    // clang-format off
+
+    // Hacky fix to force setCharPic to return
+    // if data is still loading
+    extern void setCharPic__end();
+    extern void setCharPic__cont();
+    asm void setCharPicFix()
+    {
+            nofralloc // don't need stack frame
+
+            cmpwi r3, 0
+            bne skip
+            
+            mr r3, r30
+            b setCharPic__end // branch to end of original func
+            
+            skip:
+                mr r26, r3
+                b setCharPic__cont // continue where we left off
+    }
+    // clang-format on
+
     // NOTE: This hook gets triggered again by the load thread since
     // the thread calls `setCharPic` when data is finished loading
     ResFile* getCharPicTexResFile(register muSelCharPlayerArea* area, u32 charKind)
@@ -47,24 +69,22 @@ namespace CSSHooks {
             {
                 // if data doesn't exist in archive
                 // request to load the RSP instead
-                asm {
-                    lwz r3, 0x404(area);
-                    lwz r4, 0xC0(area);
-                    lwz r4, 0x10(r4);
-                    lwz r12, 0x0(r3);
-                    lwz r12, 0x3c(r12);
-                    mtctr r12;
-                    bctrl;
-                }
+                // asm {
+                //     lwz r3, 0x404(area);
+                //     lwz r4, 0xC0(area);
+                //     lwz r4, 0x10(r4);
+                //     lwz r12, 0x0(r3);
+                //     lwz r12, 0x3c(r12);
+                //     mtctr r12;
+                //     bctrl;
+                // }
                 thread->requestLoad(charKind);
-                return &area->charPicRes;
+                return NULL;
             }
 
             // CSPs in the archive are compressed
             CXUncompressLZ(data, (void*)area->charPicData);
         }
-
-        ResFile* resFile = &area->charPicRes;
 
         // flush cache
         DCFlushRange(area->charPicData, 0x40000);
@@ -73,13 +93,13 @@ namespace CSSHooks {
         area->charPicRes = (ResFile)area->charPicData;
 
         // init resFile and return
-        ResFile::Init(resFile);
+        ResFile::Init(&area->charPicRes);
 
         // to ensure we load more than just
         // the first hovered character
         thread->reset();
 
-        return resFile;
+        return &area->charPicRes;
     }
 
     muSelCharPlayerArea* (*_destroyPlayerAreas)(void*, int);
@@ -108,5 +128,9 @@ namespace CSSHooks {
 
         // hook to create threads when booting the CSS
         SyringeCore::syInlineHookRel(0x3524, reinterpret_cast<void*>(createThreads), Modules::SORA_MENU_SEL_CHAR);
+
+        // simple asm hook to force setCharPic to
+        // return if data is still loading
+        SyringeCore::sySimpleHookRel(0x14ce4, reinterpret_cast<void*>(setCharPicFix), Modules::SORA_MENU_SEL_CHAR);
     }
 } // namespace CSSHooks

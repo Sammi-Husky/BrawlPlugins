@@ -10,10 +10,10 @@ protected:
     char m_stack[0x1000];
     gfFileIOHandle m_handle;
     muSelCharPlayerArea* m_playerArea;
-    int m_toLoad;
     bool m_shouldExit;
 
 public:
+    int m_toLoad;
     bool m_isRunning;
     bool m_dataReady;
 
