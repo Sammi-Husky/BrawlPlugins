@@ -10,9 +10,9 @@ export TOOLS 	:= $(CURDIR)/tools
 export LIB 		:= $(CURDIR)/lib
 
 
-.PHONY: all AsyncRSP CodeMenu ftp NetLog
+.PHONY: all Physics #AsyncRSP CodeMenu ftp NetLog
 
-all: AsyncRSP CodeMenu ftp NetLog
+all: Physics #AsyncRSP CodeMenu ftp NetLog
 
 AsyncRSP:
 	$(MAKE) -C AsyncRSP
@@ -30,9 +30,14 @@ NetLog:
 	$(MAKE) -s -C NetLog
 	@cp NetLog/$@.rel $@.rel
 
+Physics:
+	$(MAKE) -s -C Physics
+	@cp Physics/$@.rel $@.rel
+
 clean:
 	@rm ./*.rel
 	$(MAKE) -s -C AsyncRSP clean
 	$(MAKE) -s -C CodeMenu clean
 	$(MAKE) -s -C ftp clean
 	$(MAKE) -s -C NetLog clean
+	$(MAKE) -s -C Physics clean
