@@ -2,7 +2,7 @@
 #include <OS/OSCache.h>
 #include <VI/vi.h>
 #include <memory.h>
-#include <mu/mu_menu.h>
+#include <mu/menu.h>
 #include <printf.h>
 
 void* selCharLoadThread::main(void* arg)

@@ -3,7 +3,7 @@
 #include <gf/gf_archive.h>
 #include <memory.h>
 #include <modules.h>
-#include <mu/mu_menu.h>
+#include <mu/menu.h>
 #include <mu/mu_sel_char_player_area.h>
 #include <nw4r/g3d/g3d_resfile.h>
 #include <sy_core.h>
