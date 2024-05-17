@@ -9,7 +9,16 @@ namespace Physics {
         soPostureModule* postureModule = fighter->m_moduleAccesser->getPostureModule();
         soGroundModule* groundModule = fighter->m_moduleAccesser->getGroundModule();
 
-        
+        if (groundModule->getCollStatus(0)->m_touchFlag7 && ((statusModule->getPrevStatusKind(0) == 0x33 && statusModule->getStatusKind() == 0xE) || (statusModule->getPrevStatusKind(0) == 0x45 && statusModule->getStatusKind() == 0x49))) {
+            Vec3f newPos = postureModule->getPos();
+            groundModule->setCorrect(2, 0);
+            fighter->processAnim();
+            fighter->processUpdate();
+            fighter->processPreMapCorrection;
+            fighter->processMapCorrection();
+            fighter->processFixPosition();
+            postureModule->initPos(&newPos);
+        }
     }
 
     void smoothWavedashes(Fighter* fighter) {
