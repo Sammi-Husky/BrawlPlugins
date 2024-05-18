@@ -37,8 +37,7 @@ namespace Physics {
 
             Vec2f downPos = groundModule->getDownPos(0);
             Vec3f startPos = {downPos.m_x, downPos.m_y, 0.0};
-            Vec3f dir = {0.0, -1.0, 0.0};
-            if (stRayCheck(&startPos, &dir, true, NULL, true, 1)) {
+            if (stRayCheck(&startPos, &(Vec3f){0.0, -1.0, 0.0}, true, NULL, true, 1)) {
                 groundModule->attachGround(0);
                 groundModule->apply();
                 fighter->processAnim();
