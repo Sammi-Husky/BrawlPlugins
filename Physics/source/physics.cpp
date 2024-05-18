@@ -76,14 +76,17 @@ namespace Physics {
         soWorkManageModule* workManageModule = fighter->m_moduleAccesser->getWorkManageModule();
 
         if (workManageModule->isFlag(0x20000000 | 0x02000000 | 0x2)) {
-            Vec2f speed = kineticModule->getEnergy(1)->getSpeed();
+            float prevSpeed = kineticModule->getEnergy(1)->getSpeed().m_y;
             kineticModule->getEnergy(1)->updateEnergy(fighter->m_moduleAccesser);
-            Vec3f pos = postureModule->getPos();
-            pos.m_y -= speed.m_y;
-            postureModule->setPos(&pos);
-            fighter->updatePosture(true);
-            fighter->updateRoughPos();
-            fighter->updateNodeSRT();
+            float speed = kineticModule->getEnergy(1)->getSpeed().m_y;
+            if (prevSpeed != speed) {
+                Vec3f pos = postureModule->getPos();
+                pos.m_y -= prevSpeed;
+                postureModule->setPos(&pos);
+                fighter->updatePosture(true);
+                fighter->updateRoughPos();
+                fighter->updateNodeSRT();
+            }
         }
     }
 
