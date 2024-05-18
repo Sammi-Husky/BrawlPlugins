@@ -43,7 +43,7 @@ namespace Physics {
                 fighter->processAnim();
                 fighter->processUpdate();
                 fighter->processPreMapCorrection();
-                fighter->processMapCorrection;
+                fighter->processMapCorrection();
                 fighter->processFixPosition();
 
                 downPos = groundModule->getDownPos(0);
