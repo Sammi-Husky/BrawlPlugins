@@ -15,7 +15,7 @@ namespace Physics {
             groundModule->setCorrect(2, 0);
             fighter->processAnim();
             fighter->processUpdate();
-            fighter->processPreMapCorrection;
+            fighter->processPreMapCorrection();
             fighter->processMapCorrection();
             fighter->processFixPosition();
             postureModule->initPos(&newPos);
