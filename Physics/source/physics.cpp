@@ -66,18 +66,25 @@ namespace Physics {
                     postureModule->setPos(&pos);
                 }
             }
-
-
-
-
-
-
         }
 
     }
 
     void instantFastfall(Fighter* fighter) {
+        soKineticModule* kineticModule = fighter->m_moduleAccesser->getKineticModule();
+        soPostureModule* postureModule = fighter->m_moduleAccesser->getPostureModule();
+        soWorkManageModule* workManageModule = fighter->m_moduleAccesser->getWorkManageModule();
 
+        if (workManageModule->isFlag(0x20000000 | 0x02000000 | 0x2)) {
+            Vec2f speed = kineticModule->getEnergy(1)->getSpeed();
+            kineticModule->getEnergy(1)->updateEnergy(fighter->m_moduleAccesser);
+            Vec3f pos = postureModule->getPos();
+            pos.m_y -= speed.m_y;
+            postureModule->setPos(&pos);
+            fighter->updatePosture(true);
+            fighter->updateRoughPos();
+            fighter->updateNodeSRT();
+        }
     }
 
     void fastfallTumble(Fighter* fighter) {
