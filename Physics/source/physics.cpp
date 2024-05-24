@@ -100,23 +100,30 @@ namespace Physics {
         fastfallTumble(fighter);
     }
 
-    asm void postFighterProcessFixPosition()
+	void postFighterProcessFixPosition()
     {
-        nofralloc // don't need stack frame
-        mr r3, r26
-        bl gameplayFixes
-        psq_l f31,0x68(r1),0,0  // original operation
+        register Fighter* fighter;
+
+        asm { 
+            mr fighter, r26
+        }
+
+        aerialTransitionFix(fighter);
+        smoothWavedashes(fighter);
+        instantFastfall(fighter);
+        fastfallTumble(fighter);
     }
 
     void Init()
     {
-        OSReport("Hello World\n");
+        //OSReport("Hello World\n");
 
-        SyringeCore::sySimpleHookRel(0x12F998, reinterpret_cast<void*>(postFighterProcessFixPosition), Modules::SORA_MELEE);
+        //SyringeCore::syInlineHookRel(0x12F998, reinterpret_cast<void*>(postFighterProcessFixPosition), Modules::SORA_MELEE);
+		SyringeCore::syInlineHook(0x8083A3AC, reinterpret_cast<void*>(postFighterProcessFixPosition));
     }
 
     void Destroy()
     {
-        OSReport("Goodbye\n");
+       // OSReport("Goodbye\n");
     }
 }
