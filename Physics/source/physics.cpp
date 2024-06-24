@@ -119,8 +119,8 @@ namespace Physics {
     {
         //OSReport("Hello World\n");
 
-        //SyringeCore::syInlineHookRel(0x12F998, reinterpret_cast<void*>(postFighterProcessFixPosition), Modules::SORA_MELEE);
-		SyringeCore::syInlineHook(0x8083A3AC, reinterpret_cast<void*>(postFighterProcessFixPosition));
+        SyringeCore::syInlineHookRel(0x12F998, reinterpret_cast<void*>(postFighterProcessFixPosition), Modules::SORA_MELEE);
+		//SyringeCore::syInlineHook(0x8083A3AC, reinterpret_cast<void*>(postFighterProcessFixPosition));
     }
 
     void Destroy()
