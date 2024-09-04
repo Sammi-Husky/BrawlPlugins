@@ -1,5 +1,5 @@
 #include <fa/fa.h>
-#include <net/net.h>
+#include <nt/net.h>
 #include <pf/pf.h>
 #include <string.h>
 
