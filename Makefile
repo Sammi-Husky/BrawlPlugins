@@ -10,9 +10,9 @@ export TOOLS 	:= $(CURDIR)/tools
 export LIB 		:= $(CURDIR)/lib
 
 
-.PHONY: all Physics #AsyncRSP CodeMenu ftp NetLog
+.PHONY: all Physics AsyncRSP CodeMenu ftp NetLog
 
-all: Physics #AsyncRSP CodeMenu ftp NetLog
+all: Physics AsyncRSP CodeMenu ftp NetLog
 
 AsyncRSP:
 	$(MAKE) -C AsyncRSP
