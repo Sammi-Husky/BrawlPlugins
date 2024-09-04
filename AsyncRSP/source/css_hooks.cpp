@@ -26,65 +26,34 @@ namespace CSSHooks {
         thread->start();
     }
 
-    // clang-format off
-
-    // Hacky fix to force setCharPic to return
-    // if data is still loading
-    extern void setCharPic__end();
-    extern void setCharPic__cont();
-    asm void setCharPicFix()
-    {
-            nofralloc // don't need stack frame
-
-            cmpwi r3, 0
-            bne skip
-            
-            mr r3, r30
-            b setCharPic__end // branch to end of original func
-            
-            skip:
-                mr r26, r3
-                b setCharPic__cont // continue where we left off
-    }
-    // clang-format on
-
     // NOTE: This hook gets triggered again by the load thread since
     // the thread calls `setCharPic` when data is finished loading
     ResFile* getCharPicTexResFile(register muSelCharPlayerArea* area, u32 charKind)
     {
         selCharLoadThread* thread = threads[area->areaIdx];
 
-        if (!thread->m_dataReady)
+        // Handles conversions for poketrio and special slots
+        int id = muMenu::exchangeMuSelchkind2MuStockchkind(charKind);
+        id = muMenu::getStockFrameID(id);
+
+        // check if CSP exists in archive first.
+        void* data = selCharArchive->getData(Data_Type_Misc, id, 0xfffe);
+
+        // if the CSP is not in the archive request to load the RSP instead
+        if (!thread->isReady() && data == NULL)
         {
-            // Handles conversions for poketrio and special slots
-            int id = muMenu::exchangeMuSelchkind2MuStockchkind(charKind);
-            id = muMenu::getStockFrameID(id);
-
-            // check if CSP exists in archive first. We do this check
-            // when thread hasn't loaded data because this function
-            // will get called again by the load thread when it's ready
-            // and we don't want to check the archive a 2nd time
-            void* data = selCharArchive->getData(Data_Type_Misc, id, 0xfffe);
-            if (!data)
-            {
-                // if data doesn't exist in archive
-                // request to load the RSP instead
-                // asm {
-                //     lwz r3, 0x404(area);
-                //     lwz r4, 0xC0(area);
-                //     lwz r4, 0x10(r4);
-                //     lwz r12, 0x0(r3);
-                //     lwz r12, 0x3c(r12);
-                //     mtctr r12;
-                //     bctrl;
-                // }
-                thread->requestLoad(charKind);
-                return NULL;
-            }
-
-            // CSPs in the archive are compressed
-            CXUncompressLZ(data, (void*)area->charPicData);
+            thread->requestLoad(charKind);
+            return &area->charPicRes;
         }
+
+        // if the CSP data is in the archive, load the data from there
+        void* buffer = thread->getBuffer();
+
+        if (data != NULL)
+            CXUncompressLZ(data, buffer);
+
+        // copy data from temp load buffer
+        memcpy(area->charPicData, buffer, 0x40000);
 
         // flush cache
         DCFlushRange(area->charPicData, 0x40000);
@@ -128,9 +97,5 @@ namespace CSSHooks {
 
         // hook to create threads when booting the CSS
         SyringeCore::syInlineHookRel(0x3524, reinterpret_cast<void*>(createThreads), Modules::SORA_MENU_SEL_CHAR);
-
-        // simple asm hook to force setCharPic to
-        // return if data is still loading
-        SyringeCore::sySimpleHookRel(0x14ce4, reinterpret_cast<void*>(setCharPicFix), Modules::SORA_MENU_SEL_CHAR);
     }
 } // namespace CSSHooks

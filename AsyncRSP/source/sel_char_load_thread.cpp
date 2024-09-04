@@ -1,9 +1,23 @@
 #include "sel_char_load_thread.h"
 #include <OS/OSCache.h>
 #include <VI/vi.h>
+#include <gf/gf_heap_manager.h>
 #include <memory.h>
 #include <mu/menu.h>
 #include <cstdio>
+
+selCharLoadThread::selCharLoadThread(muSelCharPlayerArea* area)
+{
+    m_toLoad = -1;
+    m_playerArea = area;
+    m_dataReady = false;
+    m_isRunning = false;
+    m_shouldExit = false;
+
+    m_buffer = gfHeapManager::alloc(Heaps::MenuResource, 0x40000);
+
+    OSCreateThread(&m_thread, selCharLoadThread::main, this, m_stack + sizeof(m_stack), sizeof(m_stack), 31, 0);
+}
 
 void* selCharLoadThread::main(void* arg)
 {
@@ -32,12 +46,13 @@ void* selCharLoadThread::main(void* arg)
             sprintf(filepath, format, id);
 
             // Start the read process
-            thread->m_handle.readRequest(filepath, static_cast<void*>(area->charPicData), 0, 0);
+            thread->m_handle.readRequest(filepath, thread->m_buffer, 0, 0);
 
             // Clear read request and signal that read is in progress
             thread->m_toLoad = -1;
             thread->m_isRunning = true;
             thread->m_dataReady = false;
+            continue;
         }
 
         // Data is finished loading
@@ -52,24 +67,10 @@ void* selCharLoadThread::main(void* arg)
                              area->isTeamBattle(),
                              area->teamColor,
                              area->curTeamSet);
-
-            thread->m_handle.release();
         }
-        VIWaitForRetrace();
     }
 
     return NULL;
-}
-
-selCharLoadThread::selCharLoadThread(muSelCharPlayerArea* area)
-{
-    m_toLoad = -1;
-    m_playerArea = area;
-    m_dataReady = false;
-    m_isRunning = false;
-    m_shouldExit = false;
-
-    OSCreateThread(&m_thread, selCharLoadThread::main, this, m_stack + sizeof(m_stack), sizeof(m_stack), 31, 0);
 }
 
 void selCharLoadThread::start()
@@ -88,7 +89,6 @@ void selCharLoadThread::reset()
     if (m_isRunning)
     {
         m_handle.cancelRequest();
-        m_handle.release();
         m_isRunning = false;
     }
 
@@ -98,7 +98,7 @@ void selCharLoadThread::reset()
 
 selCharLoadThread::~selCharLoadThread()
 {
-    m_shouldExit = true;
-    OSJoinThread(&m_thread, NULL);
-    this->m_handle.release();
+    exit();
+    free(m_buffer);
+    m_handle.release();
 }
