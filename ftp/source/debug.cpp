@@ -1,4 +1,4 @@
-#include <printf.h>
+#include <cstdio>
 #include <stdarg.h>
 
 void debug_log(const char* fmt, ...)

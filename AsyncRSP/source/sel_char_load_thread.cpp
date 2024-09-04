@@ -3,7 +3,7 @@
 #include <VI/vi.h>
 #include <memory.h>
 #include <mu/menu.h>
-#include <printf.h>
+#include <cstdio>
 
 void* selCharLoadThread::main(void* arg)
 {

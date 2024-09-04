@@ -6,7 +6,7 @@
 #include <gf/gf_file_io.h>
 #include <memory.h>
 #include <pf/pf.h>
-#include <printf.h>
+#include <cstdio>
 #include <stdlib.h>
 #include <string.h>
 #include <strtoul.h>

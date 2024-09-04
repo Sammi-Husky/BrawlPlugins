@@ -1,4 +1,4 @@
-#include <CXCompression.h>
+#include <CX.h>
 #include <OS/OSCache.h>
 #include <gf/gf_archive.h>
 #include <memory.h>
