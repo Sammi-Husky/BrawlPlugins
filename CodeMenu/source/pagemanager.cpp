@@ -26,7 +26,7 @@ void mu_cmPageManager::update()
 		
 		void* arcModel = mu_CodeMenu::cmArcAccess(Data_Type_Model,0,0);
 		nw4r::g3d::ResFile::Init(&arcModel);
-		cmPageObjectTest->create((nw4r::g3d::ResFile**)&arcModel,"Test",0x6A,0,Heaps::MenuInstance);
+		cmPageObjectTest->create((nw4r::g3d::ResFile*)&arcModel,"Test",0x6A,NULL,Heaps::MenuInstance);
 		//getData/gfArchive 80015DDC
 		//pointer to result stored from r3 returned from previous function
 		//Init/nw4r3g3d7ResFileFv 8018EA08

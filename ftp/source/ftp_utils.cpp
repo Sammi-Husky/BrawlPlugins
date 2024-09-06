@@ -1,5 +1,5 @@
 #include <fa/fa.h>
-#include <net/net.h>
+#include <nt/net.h>
 #include <pf/pf.h>
 #include <string.h>
 
@@ -7,7 +7,7 @@
 #include "datetime.h"
 #include "debug.h"
 #include "ftp.h"
-#include "printf.h"
+#include <cstdio>
 
 // recv wrapper that waits until socket is ready
 int _recv(int socket, void* buffer, size_t len, int flags)

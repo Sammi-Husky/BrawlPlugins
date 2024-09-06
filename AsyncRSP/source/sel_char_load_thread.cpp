@@ -4,7 +4,7 @@
 #include <gf/gf_heap_manager.h>
 #include <memory.h>
 #include <mu/menu.h>
-#include <printf.h>
+#include <cstdio>
 
 selCharLoadThread::selCharLoadThread(muSelCharPlayerArea* area)
 {
