@@ -3,7 +3,7 @@
 #include <OS/OSMutex.h>
 #include <OS/OSThread.h>
 #include <gf/gf_file_io_handle.h>
-#include <mu/mu_sel_char_player_area.h>
+#include <mu/mu_selchar_player_area.h>
 
 class selCharLoadThread {
 protected:
