@@ -4,7 +4,7 @@
 #include <memory.h>
 #include <modules.h>
 #include <mu/menu.h>
-#include <mu/mu_selchar_player_area.h>
+#include <mu/selchar/mu_selchar_player_area.h>
 #include <nw4r/g3d/g3d_resfile.h>
 #include <sy_core.h>
 #include <types.h>
