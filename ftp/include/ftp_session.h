@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nt/net.h>
+#include <nt/network.h>
 
 #include "ftp.h"
 

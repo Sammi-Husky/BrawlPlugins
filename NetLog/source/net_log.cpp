@@ -3,7 +3,7 @@
 #include <VI/vi.h>
 #include <memory.h>
 #include <modules.h>
-#include <nt/net.h>
+#include <nt/network.h>
 #include <cstdio>
 #include <stdarg.h>
 #include <string.h>

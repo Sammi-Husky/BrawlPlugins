@@ -62,11 +62,11 @@ void* selCharLoadThread::main(void* arg)
             thread->m_isRunning = false;
 
             area->setCharPic(charKind,
-                             area->playerKind,
-                             area->curCostume,
+                             area->m_playerKind,
+                             area->m_charKind,
                              area->isTeamBattle(),
-                             area->teamColor,
-                             area->curTeamSet);
+                             area->m_teamColor,
+                             area->m_teamSet);
         }
     }
 
