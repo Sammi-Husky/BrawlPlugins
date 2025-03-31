@@ -9,8 +9,9 @@ namespace Syringe {
     const PluginMeta META = {
         "Sandbox",                // name
         "Sammi",                  // author
-        Version("0.0.0"),         // version
+        Version("1.0.0"),         // version
         Version(SYRINGE_VERSION), // core version
+        Sandbox::Init,            // main function
     };
 
     extern "C" {
@@ -23,6 +24,11 @@ namespace Syringe {
     void _unresolved();
     }
 
+    /**
+     * @brief This function is called when the plugin is loaded. It runs the global constructors and returns the plugin meta data.
+     * @note The plugin meta data contains a pointer to the plugin's "main" function, which will be automatically called during loading.
+     * @return const PluginMeta* Pointer to the plugin meta data.
+     */
     const PluginMeta* _prolog()
     {
         // Run global constructors
@@ -32,11 +38,13 @@ namespace Syringe {
             (*ctor)();
         }
 
-        Sandbox::Init();
-
         return &META;
     }
 
+    /**
+     * @brief This function is called when the plugin is unloaded. It runs the global destructors.
+     * @return void
+     */
     void _epilog()
     {
         // run the global destructors
@@ -47,8 +55,12 @@ namespace Syringe {
         }
     }
 
+    /**
+     * @brief This is a placeholder function for unresolved symbols. It does nothing.
+     * @note This function is not used in the current version of the plugin, but it is included for completeness.
+     * @return void
+     */
     void _unresolved(void)
     {
     }
-
 }

@@ -2,15 +2,9 @@
 #include <sy_core.h>
 
 namespace Sandbox {
-
     void Init()
     {
-        OSReport("Hello World\n");
-        // SyringeCore::syInlineHook(0x800177B0, (void*)helloWorld);
+        OSReport("Hello from plugin\n");
     }
 
-    void Destroy()
-    {
-        OSReport("Goodbye\n");
-    }
 }
