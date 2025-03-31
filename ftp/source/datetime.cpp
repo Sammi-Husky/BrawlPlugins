@@ -1,4 +1,4 @@
-#include <printf.h>
+#include <cstdio>
 #include <string.h>
 
 #include "datetime.h"

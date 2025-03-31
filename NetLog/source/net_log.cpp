@@ -3,8 +3,8 @@
 #include <VI/vi.h>
 #include <memory.h>
 #include <modules.h>
-#include <net/net.h>
-#include <printf.h>
+#include <nt/network.h>
+#include <cstdio>
 #include <stdarg.h>
 #include <string.h>
 #include <sy_core.h>

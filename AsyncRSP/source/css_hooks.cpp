@@ -1,10 +1,10 @@
-#include <CXCompression.h>
+#include <CX.h>
 #include <OS/OSCache.h>
 #include <gf/gf_archive.h>
 #include <memory.h>
 #include <modules.h>
 #include <mu/menu.h>
-#include <mu/mu_sel_char_player_area.h>
+#include <mu/selchar/mu_selchar_player_area.h>
 #include <nw4r/g3d/g3d_resfile.h>
 #include <sy_core.h>
 #include <types.h>
@@ -22,7 +22,7 @@ namespace CSSHooks {
     void createThreads(muSelCharPlayerArea* area)
     {
         selCharLoadThread* thread = new (Heaps::Thread) selCharLoadThread(area);
-        threads[area->areaIdx] = thread;
+        threads[area->m_areaIdx] = thread;
         thread->start();
     }
 
@@ -30,7 +30,7 @@ namespace CSSHooks {
     // the thread calls `setCharPic` when data is finished loading
     ResFile* getCharPicTexResFile(register muSelCharPlayerArea* area, u32 charKind)
     {
-        selCharLoadThread* thread = threads[area->areaIdx];
+        selCharLoadThread* thread = threads[area->m_areaIdx];
 
         // Handles conversions for poketrio and special slots
         int id = muMenu::exchangeMuSelchkind2MuStockchkind(charKind);
@@ -43,7 +43,7 @@ namespace CSSHooks {
         if (!thread->isReady() && data == NULL)
         {
             thread->requestLoad(charKind);
-            return &area->charPicRes;
+            return &area->m_charPicRes;
         }
 
         // if the CSP data is in the archive, load the data from there
@@ -53,30 +53,30 @@ namespace CSSHooks {
             CXUncompressLZ(data, buffer);
 
         // copy data from temp load buffer
-        memcpy(area->charPicData, buffer, 0x40000);
+        memcpy(area->m_charPicData, buffer, 0x40000);
 
         // flush cache
-        DCFlushRange(area->charPicData, 0x40000);
+        DCFlushRange(area->m_charPicData, 0x40000);
 
         // set ResFile to point to filedata
-        area->charPicRes = (ResFile)area->charPicData;
+        area->m_charPicRes = (ResFile)area->m_charPicData;
 
         // init resFile and return
-        ResFile::Init(&area->charPicRes);
+        ResFile::Init(&area->m_charPicRes);
 
         // to ensure we load more than just
         // the first hovered character
         thread->reset();
 
-        return &area->charPicRes;
+        return &area->m_charPicRes;
     }
 
     muSelCharPlayerArea* (*_destroyPlayerAreas)(void*, int);
     muSelCharPlayerArea* destroyPlayerAreas(muSelCharPlayerArea* object, int external)
     {
         // destroy our load thread
-        delete threads[object->areaIdx];
-        threads[object->areaIdx] = 0;
+        delete threads[object->m_areaIdx];
+        threads[object->m_areaIdx] = 0;
 
         return _destroyPlayerAreas(object, external);
     }

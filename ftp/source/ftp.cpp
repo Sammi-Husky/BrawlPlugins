@@ -2,11 +2,11 @@
 #include <OS/OSThread.h>
 #include <VI/vi.h>
 #include <extras.h>
-#include <fa/fa.h>
+#include <FA.h>
 #include <gf/gf_file_io.h>
 #include <memory.h>
-#include <pf/pf.h>
-#include <printf.h>
+#include <VF.h>
+#include <cstdio>
 #include <stdlib.h>
 #include <string.h>
 #include <strtoul.h>
@@ -336,7 +336,7 @@ namespace FTP {
             buildPath(tmp, args, session->m_cwd);
         }
 
-        pfstat st;
+        FAStat st;
         FAFstat(session->m_buffer, &st);
         if (st.flags & 0x10)
         {
@@ -421,7 +421,7 @@ namespace FTP {
     }
     int handleSIZE(FTPSession* session, char* args)
     {
-        pfstat st;
+        FAStat st;
 
         if (args[0] == '/')
         {
@@ -444,7 +444,7 @@ namespace FTP {
     }
     int handleMDTM(FTPSession* session, char* args)
     {
-        pfstat st;
+        FAStat st;
         if (args[0] == '/')
         {
             // if arg is absolute path

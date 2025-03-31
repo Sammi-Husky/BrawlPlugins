@@ -1,13 +1,14 @@
-#include <fa/fa.h>
-#include <net/net.h>
-#include <pf/pf.h>
+#include <FA.h>
+#include <VF.h>
+#include <VI.h>
+
+#include <nt/network.h>
 #include <string.h>
 
-#include "VI/vi.h"
 #include "datetime.h"
 #include "debug.h"
 #include "ftp.h"
-#include "printf.h"
+#include <cstdio>
 
 // recv wrapper that waits until socket is ready
 int _recv(int socket, void* buffer, size_t len, int flags)
@@ -239,7 +240,7 @@ void buildPath(char* dest, const char* file, const char* cwd)
 int renameFile(const char* newName, const char* oldName)
 {
     char filebuf[DATA_BUF_SIZE];
-    pfstat st;
+    FAStat st;
     FAFstat(oldName, &st);
 
     FAHandle* src = FAFopen(oldName, "r");
@@ -269,14 +270,14 @@ int renameFile(const char* newName, const char* oldName)
 int renameFolder(const char* newName, const char* oldName)
 {
     int err;
-    PFSTR str;
-    PFENT_ITER iter;
-    PFENT entry;
+    PF_STR str;
+    PF_ENT_ITER iter;
+    PF_DIR_ENT entry;
     char dirent[0x20];
     err = PFSTR_InitStr(&str, oldName, 0x1);
     if (err == 0)
     {
-        PFVOL* vol = PFPATH_GetVolumeFromPath(&str);
+        PF_VOLUME* vol = PFPATH_GetVolumeFromPath(&str);
         PF_enterCritical(&vol->_0x1f90);
         vol->_0x1644 = 0x0;
 
