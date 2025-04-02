@@ -1,4 +1,7 @@
+#pragma once
+
+class CoreApi;
 namespace Physics {
-    void Init();
+    void Init(CoreApi* api);
     void Destroy();
 }

@@ -1,18 +1,25 @@
 #include "ftp.h"
-
+#include "sy_core.h"
 namespace Syringe {
+
+    const PluginMeta META = {
+        "ftp",                   // name
+        "Sammi Husky",           // author
+        Version("0.5.0"),        // version
+        Version(SYRINGE_VERSION) // core version
+    };
 
     extern "C" {
     typedef void (*PFN_voidfunc)();
     __attribute__((section(".ctors"))) extern PFN_voidfunc _ctors[];
     __attribute__((section(".ctors"))) extern PFN_voidfunc _dtors[];
 
-    void _prolog();
+    const PluginMeta* _prolog(CoreApi* api);
     void _epilog();
     void _unresolved();
     }
 
-    void _prolog()
+    const PluginMeta* _prolog(CoreApi* api)
     {
         // Run global constructors
         PFN_voidfunc* ctor;
@@ -21,7 +28,9 @@ namespace Syringe {
             (*ctor)();
         }
 
-        FTP::start(); // FTP server
+        FTP::start(api); // FTP server
+
+        return &META;
     }
 
     void _epilog()

@@ -7,11 +7,10 @@
 namespace Syringe {
 
     const PluginMeta META = {
-        "Sandbox",                // name
-        "Sammi",                  // author
-        Version("1.0.0"),         // version
-        Version(SYRINGE_VERSION), // core version
-        Sandbox::Init,            // main function
+        "Sandbox",               // name
+        "Sammi",                 // author
+        Version("1.0.0"),        // version
+        Version(SYRINGE_VERSION) // core version
     };
 
     extern "C" {
@@ -19,7 +18,7 @@ namespace Syringe {
     __attribute__((section(".ctors"))) extern PFN_voidfunc _ctors[];
     __attribute__((section(".ctors"))) extern PFN_voidfunc _dtors[];
 
-    const PluginMeta* _prolog();
+    const PluginMeta* _prolog(CoreApi* api);
     void _epilog();
     void _unresolved();
     }
@@ -29,7 +28,7 @@ namespace Syringe {
      * @note The plugin meta data contains a pointer to the plugin's "main" function, which will be automatically called during loading.
      * @return const PluginMeta* Pointer to the plugin meta data.
      */
-    const PluginMeta* _prolog()
+    const PluginMeta* _prolog(CoreApi* api)
     {
         // Run global constructors
         PFN_voidfunc* ctor;
@@ -37,6 +36,8 @@ namespace Syringe {
         {
             (*ctor)();
         }
+
+        Sandbox::Init(api);
 
         return &META;
     }

@@ -10,6 +10,20 @@ endif
 include $(DEVKITPPC)/wii_rules
 
 #---------------------------------------------------------------------------------
+# TOOLS is a directory to the tools folder containing MWCC and other programs
+# LIB is a directory to the lib folder
+#---------------------------------------------------------------------------------
+
+ifeq ($(strip $(TOOLS)),)
+TOOLS	:= $(TOPDIR)/../tools
+endif
+
+ifeq ($(strip $(LIB)),)
+LIB	:= $(CURDIR)/../lib
+endif
+
+
+#---------------------------------------------------------------------------------
 # TARGET is the name of the output
 # BUILD is the directory where object files & intermediate files will be placed
 # SOURCES is a list of directories containing source code
@@ -73,7 +87,7 @@ export HFILES := $(addsuffix .h,$(subst .,_,$(BINFILES)))
 
 # For REL linking
 export LDFILES		:= $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.ld)))
-export MAPFILE		:= $(LIB)/BrawlHeaders/RSBE01.lst $(LIB)/sy_core/sy_core.lst $(TOPDIR)/EXTRA.lst
+export MAPFILE		:= $(LIB)/BrawlHeaders/RSBE01.lst $(TOPDIR)/EXTRA.lst
 export LCF			:= $(TOPDIR)/rel.lcf
 
 #---------------------------------------------------------------------------------

@@ -1,12 +1,12 @@
 
-#include <OS/OSThread.h>
-#include <VI/vi.h>
-#include <extras.h>
 #include <FA.h>
+#include <OS/OSThread.h>
+#include <VF.h>
+#include <VI/vi.h>
+#include <cstdio>
+#include <extras.h>
 #include <gf/gf_file_io.h>
 #include <memory.h>
-#include <VF.h>
-#include <cstdio>
 #include <stdlib.h>
 #include <string.h>
 #include <strtoul.h>
@@ -649,7 +649,7 @@ namespace FTP {
 
     OSThread thread;
     char* stack;
-    void start()
+    void start(CoreApi* api)
     {
         // allows FARemove to delete directories
         *(u32*)0x803e4d30 = 0x70000009; // ignore directory attribute
@@ -657,7 +657,7 @@ namespace FTP {
 
         // Hook to make FARemove return an error if attempting
         // to delete a non-empty directory
-        SyringeCore::sySimpleHook(0x803e4d28, reinterpret_cast<void*>(PFFILE_p_remove_hook));
+        api->sySimpleHook(0x803e4d28, reinterpret_cast<void*>(PFFILE_p_remove_hook));
 
         // create stack on Network
         // heap to save space in ours

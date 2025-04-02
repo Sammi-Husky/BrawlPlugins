@@ -7,10 +7,10 @@
 namespace Syringe {
 
     const PluginMeta META = {
-        "AsyncRSP",               // name
-        "SammiHusky",             // author
-        Version("0.5.0"),         // version
-        Version(SYRINGE_VERSION), // core version
+        "AsyncRSP",              // name
+        "Sammi Husky",           // author
+        Version("0.5.0"),        // version
+        Version(SYRINGE_VERSION) // core version
     };
 
     extern "C" {
@@ -18,12 +18,12 @@ namespace Syringe {
     __attribute__((section(".ctors"))) extern PFN_voidfunc _ctors[];
     __attribute__((section(".ctors"))) extern PFN_voidfunc _dtors[];
 
-    const PluginMeta* _prolog();
+    const PluginMeta* _prolog(CoreApi* api);
     void _epilog();
     void _unresolved();
     }
 
-    const PluginMeta* _prolog()
+    const PluginMeta* _prolog(CoreApi* api)
     {
         // Run global constructors
         PFN_voidfunc* ctor;
@@ -32,7 +32,7 @@ namespace Syringe {
             (*ctor)();
         }
 
-        CSSHooks::InstallHooks();
+        CSSHooks::InstallHooks(api);
 
         return &META;
     }

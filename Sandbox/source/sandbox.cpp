@@ -2,7 +2,7 @@
 #include <sy_core.h>
 
 namespace Sandbox {
-    void Init()
+    void Init(CoreApi* api)
     {
         OSReport("Hello from plugin\n");
     }

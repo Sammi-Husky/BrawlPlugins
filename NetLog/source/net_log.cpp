@@ -1,10 +1,10 @@
 #include <OS/OSError.h>
 #include <OS/OSThread.h>
 #include <VI/vi.h>
+#include <cstdio>
 #include <memory.h>
 #include <modules.h>
 #include <nt/network.h>
-#include <cstdio>
 #include <stdarg.h>
 #include <string.h>
 #include <sy_core.h>
@@ -87,7 +87,7 @@ namespace NetLog {
         return;
     }
 
-    int Init()
+    int Init(CoreApi* api)
     {
         srv_socket = socket(AF_INET, SOCK_DGRAM, 0);
         if (srv_socket == -1)
@@ -114,7 +114,7 @@ namespace NetLog {
         OSCreateThread(&thread, listen, NULL, stack + sizeof(stack), sizeof(stack), 31, 0);
         OSResumeThread(&thread);
 
-        SyringeCore::syReplaceFunc(0x801d8600, reinterpret_cast<void*>(send), (void**)&_OSReport);
+        api->syReplaceFunc(0x801d8600, reinterpret_cast<void*>(send), (void**)&_OSReport);
         return 0;
     }
 

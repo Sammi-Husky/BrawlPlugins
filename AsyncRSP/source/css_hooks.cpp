@@ -81,21 +81,21 @@ namespace CSSHooks {
         return _destroyPlayerAreas(object, external);
     }
 
-    void InstallHooks()
+    void InstallHooks(CoreApi* api)
     {
         // hook to load portraits from RSPs
-        SyringeCore::syReplaceFuncRel(0x1107c,
-                                      reinterpret_cast<void*>(getCharPicTexResFile),
-                                      NULL,
-                                      Modules::SORA_MENU_SEL_CHAR);
+        api->syReplaceFuncRel(0x1107c,
+                              reinterpret_cast<void*>(getCharPicTexResFile),
+                              NULL,
+                              Modules::SORA_MENU_SEL_CHAR);
 
         // hook to clean up our mess when unloading CSS
-        SyringeCore::syReplaceFuncRel(0x10EF8,
-                                      reinterpret_cast<void*>(destroyPlayerAreas),
-                                      (void**)&_destroyPlayerAreas,
-                                      Modules::SORA_MENU_SEL_CHAR);
+        api->syReplaceFuncRel(0x10EF8,
+                              reinterpret_cast<void*>(destroyPlayerAreas),
+                              (void**)&_destroyPlayerAreas,
+                              Modules::SORA_MENU_SEL_CHAR);
 
         // hook to create threads when booting the CSS
-        SyringeCore::syInlineHookRel(0x3524, reinterpret_cast<void*>(createThreads), Modules::SORA_MENU_SEL_CHAR);
+        api->syInlineHookRel(0x3524, reinterpret_cast<void*>(createThreads), Modules::SORA_MENU_SEL_CHAR);
     }
 } // namespace CSSHooks

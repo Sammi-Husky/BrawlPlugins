@@ -8,7 +8,7 @@ namespace Syringe {
 
     const PluginMeta META = {
         "Physics",                // name
-        "Project+",                  // author
+        "Project+",               // author
         Version("0.0.0"),         // version
         Version(SYRINGE_VERSION), // core version
     };
@@ -18,12 +18,12 @@ namespace Syringe {
     __attribute__((section(".ctors"))) extern PFN_voidfunc _ctors[];
     __attribute__((section(".ctors"))) extern PFN_voidfunc _dtors[];
 
-    const PluginMeta* _prolog();
+    const PluginMeta* _prolog(CoreApi* api);
     void _epilog();
     void _unresolved();
     }
 
-    const PluginMeta* _prolog()
+    const PluginMeta* _prolog(CoreApi* api)
     {
         // Run global constructors
         PFN_voidfunc* ctor;
@@ -32,7 +32,7 @@ namespace Syringe {
             (*ctor)();
         }
 
-        Physics::Init();
+        Physics::Init(api);
 
         return &META;
     }

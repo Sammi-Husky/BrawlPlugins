@@ -40,9 +40,10 @@ struct debugSettings
 		bool displayHUD;	
 };	
 
+class CoreApi;
 class mu_CodeMenu {
 	public:		
-		static void Initialize(), Destroy(), Update();
+		static void Initialize(CoreApi* api), Destroy(), Update();
 		static int* cmArcAccess(ARCNodeType fileType, int fileIndex = 0, int fileGroup = 0, void* packageLoc = 0);
 };
 

@@ -1,4 +1,5 @@
+class CoreApi;
 namespace Sandbox {
-    void Init();
+    void Init(CoreApi* api);
     void Destroy();
 }

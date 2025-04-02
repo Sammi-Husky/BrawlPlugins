@@ -19,8 +19,9 @@ struct FTPCommand {
     int (*handler)(FTPSession* session, char* args);
 };
 
+class CoreApi;
 namespace FTP {
 
-    void start();
+    void start(CoreApi* api);
 
 } // namespace FTP

@@ -66,7 +66,7 @@ void * cmComponents[4] =
 
 mu_cmPageManager* pagemanager;
 
-void mu_CodeMenu::Initialize()
+void mu_CodeMenu::Initialize(CoreApi* api)
 {
 	
 	register const char* heapname = "CodeMenu";
@@ -108,7 +108,7 @@ void mu_CodeMenu::Initialize()
 	
 	packageLoad.release();
 
-	SyringeCore::syInlineHookRel(0x6910, reinterpret_cast<void*>(mu_CodeMenu::Update), Modules::SORA_MENU_SEL_CHAR);
+	api->syInlineHookRel(0x6910, reinterpret_cast<void*>(mu_CodeMenu::Update), Modules::SORA_MENU_SEL_CHAR);
 	
 };
 

@@ -1,19 +1,21 @@
-#include <os/OSError.h>
-#include <sy_core.h>
-#include <modules.h>
 #include <ft/fighter.h>
+#include <modules.h>
+#include <os/OSError.h>
 #include <st/st_utility.h>
+#include <sy_core.h>
 
 namespace Physics {
-    void aerialTransitionFix(Fighter* fighter) {
+    void aerialTransitionFix(Fighter* fighter)
+    {
         soStatusModule* statusModule = fighter->m_moduleAccesser->getStatusModule();
         soPostureModule* postureModule = fighter->m_moduleAccesser->getPostureModule();
         soGroundModule* groundModule = fighter->m_moduleAccesser->getGroundModule();
         grCollStatus* collStatus = groundModule->getCollStatus(0);
 
-        if (collStatus != NULL && collStatus->m_touchFlag7 && ((statusModule->getPrevStatusKind(0) == 0x33 && statusModule->getStatusKind() == 0xE) || (statusModule->getPrevStatusKind(0) == 0x45 && statusModule->getStatusKind() == 0x49))) {
+        if (collStatus != NULL && collStatus->m_touchFlag7 && ((statusModule->getPrevStatusKind(0) == 0x33 && statusModule->getStatusKind() == 0xE) || (statusModule->getPrevStatusKind(0) == 0x45 && statusModule->getStatusKind() == 0x49)))
+        {
             Vec3f newPos = postureModule->getPos();
-            groundModule->setCorrect(2, 0);
+            groundModule->setCorrect(soGroundShapeImpl::Correct_Ground_Cliff_Stop, 0);
             fighter->processAnim();
             fighter->processUpdate();
             fighter->processPreMapCorrection();
@@ -23,7 +25,8 @@ namespace Physics {
         }
     }
 
-    void smoothWavedashes(Fighter* fighter) {
+    void smoothWavedashes(Fighter* fighter)
+    {
         soMotionModule* motionModule = fighter->m_moduleAccesser->getMotionModule();
         soGroundModule* groundModule = fighter->m_moduleAccesser->getGroundModule();
         soPostureModule* postureModule = fighter->m_moduleAccesser->getPostureModule();
@@ -34,11 +37,13 @@ namespace Physics {
             motionModule->getFrame() == 0.0 &&
             statusModule->getPrevStatusKind(0) != 0x72 &&
             statusModule->getPrevStatusKind(0) != 0x7A &&
-            kineticModule->getEnergy(0)->getSpeed().m_y < -0.001) {
+            kineticModule->getEnergy(0)->getSpeed().m_y < -0.001)
+        {
 
             Vec2f downPos = groundModule->getDownPos(0);
-            Vec3f startPos = {downPos.m_x, downPos.m_y, 0.0};
-            if (stRayCheck(&startPos, &(Vec3f){0.0, -1.0, 0.0}, true, NULL, true, 1)) {
+            Vec3f startPos = { downPos.m_x, downPos.m_y, 0.0 };
+            if (stRayCheck(&startPos, &(Vec3f){ 0.0, -1.0, 0.0 }, true, NULL, true, 1))
+            {
                 groundModule->attachGround(0);
                 groundModule->apply();
                 fighter->processAnim();
@@ -50,7 +55,8 @@ namespace Physics {
                 downPos = groundModule->getDownPos(0);
                 Vec3f outHitPos;
                 Vec3f outCollNormalVec;
-                if (stRayCheck(&(Vec3f){startPos.m_x, startPos.m_y, 0.0}, &(Vec3f){0.0, downPos.m_y - startPos.m_y, 0.0}, &outHitPos, &outCollNormalVec, true, NULL, true, 1)) {
+                if (stRayCheck(&(Vec3f){ startPos.m_x, startPos.m_y, 0.0 }, &(Vec3f){ 0.0, downPos.m_y - startPos.m_y, 0.0 }, &outHitPos, &outCollNormalVec, true, NULL, true, 1))
+                {
                     Vec3f pos = postureModule->getPos();
                     pos.m_y = outHitPos.m_y;
                     postureModule->setPos(&pos);
@@ -58,8 +64,9 @@ namespace Physics {
                 }
                 Vec2f rightPos = groundModule->getRightPos(0);
                 Vec2f leftPos = groundModule->getLeftPos(0);
-                if (stRayCheck(&(Vec3f){rightPos.m_x, rightPos.m_y, 0.0}, &(Vec3f){-5.0, 0.0, 0.0}, true, NULL, true, 1) ||
-                    stRayCheck(&(Vec3f){leftPos.m_x, leftPos.m_y, 0.0}, &(Vec3f){5.0, 0.0, 0.0}, true, NULL, true, 1)) {
+                if (stRayCheck(&(Vec3f){ rightPos.m_x, rightPos.m_y, 0.0 }, &(Vec3f){ -5.0, 0.0, 0.0 }, true, NULL, true, 1) ||
+                    stRayCheck(&(Vec3f){ leftPos.m_x, leftPos.m_y, 0.0 }, &(Vec3f){ 5.0, 0.0, 0.0 }, true, NULL, true, 1))
+                {
                     Vec3f prevPos = postureModule->getPrevPos();
                     Vec3f pos = postureModule->getPos();
                     pos.m_x = prevPos.m_x;
@@ -67,19 +74,21 @@ namespace Physics {
                 }
             }
         }
-
     }
 
-    void instantFastfall(Fighter* fighter) {
+    void instantFastfall(Fighter* fighter)
+    {
         soKineticModule* kineticModule = fighter->m_moduleAccesser->getKineticModule();
         soPostureModule* postureModule = fighter->m_moduleAccesser->getPostureModule();
         soWorkManageModule* workManageModule = fighter->m_moduleAccesser->getWorkManageModule();
 
-        if (workManageModule->isFlag(0x20000000 | 0x02000000 | 0x2)) {
+        if (workManageModule->isFlag(0x20000000 | 0x02000000 | 0x2))
+        {
             float prevSpeed = kineticModule->getEnergy(1)->getSpeed().m_y;
             kineticModule->getEnergy(1)->updateEnergy(fighter->m_moduleAccesser);
             float speed = kineticModule->getEnergy(1)->getSpeed().m_y;
-            if (prevSpeed != speed) {
+            if (prevSpeed != speed)
+            {
                 Vec3f pos = postureModule->getPos();
                 pos.m_y -= prevSpeed;
                 postureModule->setPos(&pos);
@@ -90,18 +99,19 @@ namespace Physics {
         }
     }
 
-    void fastfallTumble(Fighter* fighter) {
-
+    void fastfallTumble(Fighter* fighter)
+    {
     }
 
-    void gameplayFixes(Fighter* fighter) {
+    void gameplayFixes(Fighter* fighter)
+    {
         aerialTransitionFix(fighter);
         smoothWavedashes(fighter);
         instantFastfall(fighter);
         fastfallTumble(fighter);
     }
 
-	void postFighterProcessFixPosition()
+    void postFighterProcessFixPosition()
     {
         register Fighter* fighter;
 
@@ -115,16 +125,16 @@ namespace Physics {
         fastfallTumble(fighter);
     }
 
-    void Init()
+    void Init(CoreApi* api)
     {
-        //OSReport("Hello World\n");
+        // OSReport("Hello World\n");
 
-        SyringeCore::syInlineHookRel(0x12F998, reinterpret_cast<void*>(postFighterProcessFixPosition), Modules::SORA_MELEE);
-		//SyringeCore::syInlineHook(0x8083A3AC, reinterpret_cast<void*>(postFighterProcessFixPosition));
+        api->syInlineHookRel(0x12F998, reinterpret_cast<void*>(postFighterProcessFixPosition), Modules::SORA_MELEE);
+        // api->syInlineHook(0x8083A3AC, reinterpret_cast<void*>(postFighterProcessFixPosition));
     }
 
     void Destroy()
     {
-       // OSReport("Goodbye\n");
+        // OSReport("Goodbye\n");
     }
 }
