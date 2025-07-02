@@ -46,7 +46,7 @@ LD 			:= $(TOOLS)/MWCC4_2/mwldeppc.exe
 ELF2REL		:= $(TOOLS)/elf2rel.exe
 
 
-CCFLAGS		:= -Cpp_exceptions off -c -proc gekko -nostdinc -O4,s -inline auto -fp hard -u _prolog -u _epilog -u _unresolved -enum int -sdata 0 -sdata2 0 -func_align 4
+CCFLAGS		:= -msgstyle gcc -Cpp_exceptions off -c -proc gekko -nostdinc -O4,s -inline auto -fp hard -u _prolog -u _epilog -u _unresolved -enum int -sdata 0 -sdata2 0 -func_align 4
 CXXFLAGS	:= -lang=c++ $(CCFLAGS)
 LDFLAGS		:= -lcf $(LCF) -r1 -fp hard -m _prolog -g -strip_partial
 

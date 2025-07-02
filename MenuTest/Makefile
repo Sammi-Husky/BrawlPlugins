@@ -22,18 +22,18 @@ ifeq ($(strip $(LIB)),)
 LIB	:= $(CURDIR)/../lib
 endif
 
-
 #---------------------------------------------------------------------------------
 # TARGET is the name of the output
+# RELID is the ID to assign the .rel once built
 # BUILD is the directory where object files & intermediate files will be placed
 # SOURCES is a list of directories containing source code
 # INCLUDES is a list of directories containing extra header files
 #---------------------------------------------------------------------------------
 
-TARGET		:=	ftp
-RELID		:=  200
+TARGET		:=	Menu
+RELID		:=  202
 BUILD		:=	build
-SOURCES		:=	source $(wildcard source/*) ../lib/BrawlHeaders/PowerPC_EABI_Support/Runtime/Src/ # have to hardcode lib dir here???????
+SOURCES		:=	source $(wildcard source/*) $(wildcard source/menu/*) $(wildcard source/menu/options/*) ../lib/BrawlHeaders/PowerPC_EABI_Support/Runtime/Src/ # have to hardcode lib dir here???????
 INCLUDES	:=	include
 
 #---------------------------------------------------------------------------------

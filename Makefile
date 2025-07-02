@@ -12,7 +12,7 @@ export LIB 		:= $(CURDIR)/lib
 
 .PHONY: all Physics AsyncRSP CodeMenu ftp NetLog
 
-all: Physics AsyncRSP CodeMenu ftp NetLog
+all: Physics AsyncRSP CodeMenu ftp NetLog Sandbox MenuTest
 
 AsyncRSP:
 	$(MAKE) -C AsyncRSP
@@ -33,6 +33,14 @@ NetLog:
 Physics:
 	$(MAKE) -s -C Physics
 	@cp Physics/$@.rel $@.rel
+
+Sandbox:
+	$(MAKE) -s -C Sandbox
+	@cp Sandbox/$@.rel $@.rel
+
+MenuTest:
+	$(MAKE) -s -C MenuTest
+	@cp MenuTest/$@.rel $@.rel
 
 clean:
 	@rm ./*.rel
