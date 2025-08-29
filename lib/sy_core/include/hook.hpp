@@ -1,0 +1,56 @@
+#pragma once
+
+#include <types.h>
+
+namespace SyringeCore {
+    enum HookType {
+        HOOK_STATIC,
+        HOOK_RELATIVE
+    };
+
+    enum HookOptions {
+        OPT_NONE = 0x0,      // no options
+        OPT_SAVE_REGS = 0x1, // use safe hook
+        OPT_ORIG_PRE = 0x2,  // run the original instruction before hook
+        OPT_ORIG_POST = 0x4, // run the original instruction after the hook
+        OPT_NO_RETURN = 0x8, // do not return to hooked function
+        OPT_DIRECT = 0x10    // use direct branch instead of wrapping in a trampoline
+    };
+
+    struct Trampoline {
+        Trampoline(u32 originalInstr, u32 retAddr);
+        u32 originalInstr; // original instruction
+        u32 branch;        // branch to original func code + 4
+    };
+
+    class Hook {
+    private:
+        s32 owner;             // ID of the plugin that owns this hook (-1 for core)
+        HookOptions options;   // hook options
+        u32 moduleId;          // module ID this hook belongs to
+        u32 tgtAddr;           // target address to hook (this can be relative)
+        u32 newAddr;           // address to branch to
+        u32 instructions[14];  // hook instructions
+        Trampoline trampoline; // trampoline to facilitate calling original function
+        u32 installedAt;       // address where the hook was actually installed
+        u32 originalInstr;     // original instruction at target address
+    public:
+        Hook(u32 source, u32 dest, u32 moduleId, int options, s32 owner);
+        HookType getType() const { return moduleId == -1 ? HOOK_STATIC : HOOK_RELATIVE; }
+        HookOptions getOptions() const { return options; }
+        u32 getModuleId() const { return moduleId; }
+        u32 getTarget() const { return tgtAddr; }
+        u32 getDestination() const { return newAddr; }
+        u32 getInstalledAt() const { return installedAt; }
+        void getTrampoline(void** func) { *func = &trampoline; }
+        void* getPayloadAddr() { return &instructions; }
+        u32 getOriginalInstr() const { return originalInstr; }
+        s32 getOwner() const { return owner; }
+
+        void apply(u32 address);
+        void undo();
+
+    private:
+        void setInstructions(u32 targetAddr, HookOptions opts);
+    };
+}

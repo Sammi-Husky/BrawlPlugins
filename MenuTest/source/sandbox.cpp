@@ -1,3 +1,4 @@
+#include "sandbox.h"
 #include "menu/menu.h"
 #include "menu/options/boolOption.h"
 
@@ -5,8 +6,11 @@
 #include <gf/gf_heap_manager.h>
 #include <gf/gf_pad_status.h>
 #include <gf/gf_pad_system.h>
-#include <sy_core.h>
+#include <hook.hpp>
+#include <plugin.hpp>
+#include <sy_core.hpp>
 
+using namespace SyringeCore;
 namespace Sandbox {
     static Menu* mainMenu = NULL; // Pointer to the main menu
 
@@ -32,7 +36,8 @@ namespace Sandbox {
     }
 
     class gfTaskScheduler;
-    void* (*_renderPre)(gfTaskScheduler* scheduler);
+    typedef void (*renderPreFN)(gfTaskScheduler* scheduler);
+    static renderPreFN _renderPre;
     void renderPre(gfTaskScheduler* scheduler)
     {
         _renderPre(scheduler);
@@ -59,9 +64,11 @@ namespace Sandbox {
 
     static bool testBool = false;
     static bool testBool2 = false;
-    void Init(CoreApi* api)
+    void Init(Plugin* plg)
     {
-        api->syReplaceFunc(0x8002e79c, reinterpret_cast<void*>(renderPre), (void**)&_renderPre);
+        Hook* hook = plg->addHookEx(0x8002e79c, renderPre, OPT_DIRECT);
+        hook->getTrampoline(reinterpret_cast<void**>(_renderPre));
+
         mainMenu = new (Heaps::Syringe) Menu;
         mainMenu->title = "Main Menu";
         mainMenu->description = "This is the main menu";
