@@ -67,7 +67,7 @@ namespace Sandbox {
     void Init(Plugin* plg)
     {
         Hook* hook = plg->addHookEx(0x8002e79c, renderPre, OPT_DIRECT);
-        hook->getTrampoline(reinterpret_cast<void**>(_renderPre));
+        hook->getTrampoline(reinterpret_cast<void**>(&_renderPre));
 
         mainMenu = new (Heaps::Syringe) Menu;
         mainMenu->title = "Main Menu";
