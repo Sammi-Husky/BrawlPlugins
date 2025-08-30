@@ -18,8 +18,8 @@ const PluginMeta META = {
     Version(SYRINGE_VERSION), // core version
     &main,
     .FLAGS = {
-        .timing = TIMING_MAIN_MENU | TIMING_MATCH | TIMING_CHAR_SELECT,
-        .loading = LOAD_UNLOAD,
+        .timing = TIMING_BOOT,
+        .loading = LOAD_PERSIST,
         .heap = Heaps::Syringe,
     }
 };
