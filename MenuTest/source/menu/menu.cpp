@@ -7,6 +7,8 @@
 #include <nw4r/ut/RomFont.h>
 #include <nw4r/ut/TextWriterBase.h>
 
+extern void* gfFramebuff;
+void* getNextRenderableXFB(void* gfFramebuffer);
 void setGx2d()
 {
     // Set up GX for 2D rendering
@@ -20,6 +22,11 @@ void setGx2d()
     PSMTXIdentity(mv);
     GXLoadPosMtxImm(mv, GX_PNMTX0);
     GXSetCurrentMtx(GX_PNMTX0);
+
+    void* framebuffer = getNextRenderableXFB(gfFramebuff);
+    GXColor black = { 0, 0, 0, 0 };
+    GXSetCopyClear(black, -1);
+    GXCopyDisp(framebuffer, true);
 }
 
 void Menu::update()
