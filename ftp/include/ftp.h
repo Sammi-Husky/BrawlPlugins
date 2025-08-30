@@ -14,6 +14,7 @@ enum FTP_XFER_MODE {
 };
 
 struct FTPSession;
+class Plugin;
 struct FTPCommand {
     char* name;
     int (*handler)(FTPSession* session, char* args);
@@ -22,6 +23,6 @@ struct FTPCommand {
 class CoreApi;
 namespace FTP {
 
-    void start(CoreApi* api);
+    void start(Plugin* api);
 
 } // namespace FTP

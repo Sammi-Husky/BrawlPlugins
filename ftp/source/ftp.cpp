@@ -6,11 +6,12 @@
 #include <cstdio>
 #include <extras.h>
 #include <gf/gf_file_io.h>
+#include <hook.hpp>
 #include <memory.h>
+#include <plugin.hpp>
 #include <stdlib.h>
 #include <string.h>
 #include <strtoul.h>
-#include <sy_core.h>
 
 #include "debug.h"
 #include "ftp.h"
@@ -649,7 +650,7 @@ namespace FTP {
 
     OSThread thread;
     char* stack;
-    void start(CoreApi* api)
+    void start(Plugin* plg)
     {
         // allows FARemove to delete directories
         *(u32*)0x803e4d30 = 0x70000009; // ignore directory attribute
@@ -657,7 +658,8 @@ namespace FTP {
 
         // Hook to make FARemove return an error if attempting
         // to delete a non-empty directory
-        api->sySimpleHook(0x803e4d28, reinterpret_cast<void*>(PFFILE_p_remove_hook));
+        plg->addHookEx(0x803e4d28, PFFILE_p_remove_hook, SyringeCore::OPT_DIRECT);
+        // api->sySimpleHook(0x803e4d28, reinterpret_cast<void*>(PFFILE_p_remove_hook));
 
         // create stack on Network
         // heap to save space in ours
