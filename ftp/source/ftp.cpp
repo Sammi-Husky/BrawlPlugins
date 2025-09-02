@@ -8,6 +8,7 @@
 #include <gf/gf_file_io.h>
 #include <hook.hpp>
 #include <memory.h>
+#include <platform.h>
 #include <plugin.hpp>
 #include <stdlib.h>
 #include <string.h>
@@ -624,7 +625,8 @@ namespace FTP {
     }
 
     // clang-format off
-    asm void PFFILE_p_remove_hook(){
+    ASM void PFFILE_p_remove_hook(){
+    #ifdef __MWERKS__
         nofralloc
         lwz r4, 0(r5) // original instruction
         andi. r0, r0, 0x10
@@ -645,6 +647,9 @@ namespace FTP {
             ori r12, r12, 0x4d2c
             mtctr r12
             bctr
+    #else
+        return;
+    #endif
     }
     // clang-format on
 

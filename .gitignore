@@ -4,7 +4,7 @@
 
 build/
 .idea/
-.vscode/
+.vscode/settings.json
 
 **/MakeSD/
 **/CreateSD.bat
