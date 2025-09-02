@@ -1,5 +1,5 @@
-class CoreApi;
+class Plugin;
 namespace Sandbox {
-    void Init(CoreApi* api);
+    void Init(Plugin* plg);
     void Destroy();
 }

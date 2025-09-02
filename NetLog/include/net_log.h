@@ -1,7 +1,7 @@
 #pragma once
 
-class CoreApi;
+class Plugin;
 namespace NetLog {
-    int Init(CoreApi* api);
+    int Init(Plugin* plg);
     void InstallHooks();
 }

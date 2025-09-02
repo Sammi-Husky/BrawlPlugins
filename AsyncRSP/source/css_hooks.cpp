@@ -1,12 +1,13 @@
 #include <CX.h>
 #include <OS/OSCache.h>
 #include <gf/gf_archive.h>
+#include <hook.hpp>
 #include <memory.h>
 #include <modules.h>
 #include <mu/menu.h>
 #include <mu/selchar/mu_selchar_player_area.h>
 #include <nw4r/g3d/g3d_resfile.h>
-#include <sy_core.h>
+#include <plugin.hpp>
 #include <types.h>
 #include <vector.h>
 
@@ -81,21 +82,31 @@ namespace CSSHooks {
         return _destroyPlayerAreas(object, external);
     }
 
-    void InstallHooks(CoreApi* api)
+    void InstallHooks(Plugin* plg)
     {
+        plg->addHookEx(0x1107c,
+                       reinterpret_cast<void*>(getCharPicTexResFile),
+                       SyringeCore::OPT_DIRECT,
+                       Modules::SORA_MENU_SEL_CHAR);
+
         // hook to load portraits from RSPs
-        api->syReplaceFuncRel(0x1107c,
-                              reinterpret_cast<void*>(getCharPicTexResFile),
-                              NULL,
-                              Modules::SORA_MENU_SEL_CHAR);
+        plg->addHookEx(0x1107c,
+                       reinterpret_cast<void*>(getCharPicTexResFile),
+                       SyringeCore::OPT_DIRECT,
+                       Modules::SORA_MENU_SEL_CHAR);
 
         // hook to clean up our mess when unloading CSS
-        api->syReplaceFuncRel(0x10EF8,
-                              reinterpret_cast<void*>(destroyPlayerAreas),
-                              (void**)&_destroyPlayerAreas,
-                              Modules::SORA_MENU_SEL_CHAR);
+        SyringeCore::Hook* hook = plg->addHookEx(0x10EF8,
+                                                 reinterpret_cast<void*>(destroyPlayerAreas),
+                                                 SyringeCore::OPT_DIRECT,
+                                                 Modules::SORA_MENU_SEL_CHAR);
+
+        hook->getTrampoline(reinterpret_cast<void**>(&_destroyPlayerAreas));
 
         // hook to create threads when booting the CSS
-        api->syInlineHookRel(0x3524, reinterpret_cast<void*>(createThreads), Modules::SORA_MENU_SEL_CHAR);
+        plg->addHookEx(0x3524,
+                       reinterpret_cast<void*>(createThreads),
+                       SyringeCore::OPT_DIRECT,
+                       Modules::SORA_MENU_SEL_CHAR);
     }
 } // namespace CSSHooks

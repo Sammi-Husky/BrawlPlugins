@@ -1,8 +1,7 @@
 #include <os/OSError.h>
-#include <sy_core.h>
-
+#include <plugin.hpp>
 namespace Sandbox {
-    void Init(CoreApi* api)
+    void Init(Plugin* plg)
     {
         OSReport("Hello from plugin\n");
     }

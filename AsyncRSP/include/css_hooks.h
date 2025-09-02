@@ -1,6 +1,6 @@
 #pragma once
 
-class CoreApi;
+class Plugin;
 namespace CSSHooks {
-    void InstallHooks(CoreApi* api);
+    void InstallHooks(Plugin* plg);
 } // namespace CSSHooks

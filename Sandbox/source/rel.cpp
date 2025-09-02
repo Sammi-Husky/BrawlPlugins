@@ -1,26 +1,38 @@
 #include <gf/gf_file_io_request.h>
 #include <gf/gf_memory_pool.h>
-#include <sy_core.h>
+#include <plugin.hpp>
+#include <sr/sr_common.h>
 
 #include "sandbox.h"
 
 namespace Syringe {
-
-    const PluginMeta META = {
-        "Sandbox",               // name
-        "Sammi",                 // author
-        Version("1.0.0"),        // version
-        Version(SYRINGE_VERSION) // core version
-    };
-
     extern "C" {
     typedef void (*PFN_voidfunc)();
     __attribute__((section(".ctors"))) extern PFN_voidfunc _ctors[];
     __attribute__((section(".ctors"))) extern PFN_voidfunc _dtors[];
 
-    const PluginMeta* _prolog(CoreApi* api);
+    const PluginMeta* _prolog();
     void _epilog();
     void _unresolved();
+    void main(Plugin* plg);
+    }
+
+    const PluginMeta META = {
+        "Sandbox",                // name
+        "Sammi",                  // author
+        Version("1.0.0"),         // version
+        Version(SYRINGE_VERSION), // core version
+        &main,
+        .FLAGS = {
+            .timing = TIMING_BOOT,
+            .loading = LOAD_PERSIST,
+            .heap = Heaps::Syringe,
+        }
+    };
+
+    void main(Plugin* plg)
+    {
+        Sandbox::Init(plg);
     }
 
     /**
@@ -28,7 +40,7 @@ namespace Syringe {
      * @note The plugin meta data contains a pointer to the plugin's "main" function, which will be automatically called during loading.
      * @return const PluginMeta* Pointer to the plugin meta data.
      */
-    const PluginMeta* _prolog(CoreApi* api)
+    const PluginMeta* _prolog()
     {
         // Run global constructors
         PFN_voidfunc* ctor;
@@ -36,8 +48,6 @@ namespace Syringe {
         {
             (*ctor)();
         }
-
-        Sandbox::Init(api);
 
         return &META;
     }
