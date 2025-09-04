@@ -3,6 +3,7 @@
 #include "menu/options/boolOption.h"
 
 #include <OS/OSError.h>
+#include <VI/vi.h>
 #include <gf/gf_heap_manager.h>
 #include <gf/gf_pad_status.h>
 #include <gf/gf_pad_system.h>
@@ -15,7 +16,13 @@ namespace Sandbox {
     static Menu* mainMenu = NULL; // Pointer to the main menu
 
     static bool menu_enable = false;
-    void updateMenuEnabled()
+    /**
+     * @brief
+     * Updates the menu enabled state based on the current button status.
+     *
+     * @returns whether this function processed the current inputs
+     */
+    bool updateMenuEnabled()
     {
         static gfPadStatus status;
         g_gfPadSystem->getSysPadStatus(0, &status);
@@ -25,14 +32,17 @@ namespace Sandbox {
         // Don't want to toggle if all are in the hold state
         // This is to prevent the menu from being toggled when the buttons are held down
         if ((status.m_buttonsHeld.bits & mask) == mask)
-            return;
+            return 0;
 
         // Check if the L, R, Y, and DPad Up buttons are pressed and the last button in the combo was pressed this frame
         u32 bits = status.m_buttonsHeld.bits | status.m_buttonsPressedThisFrame.bits;
         if ((bits & mask) == mask)
         {
             menu_enable = !menu_enable; // Toggle the menu on/off
+            return 1;
         }
+
+        return 0;
     }
 
     class gfTaskScheduler;
@@ -43,7 +53,11 @@ namespace Sandbox {
         _renderPre(scheduler);
 
         // Enables the menu if the button combination is pressed
-        updateMenuEnabled();
+        // If the menu was enabled this frame, the input has been handled
+        // and we should return to prevent inputs from being processed
+        // further down the chain
+        if (updateMenuEnabled())
+            return;
 
         // Pause the game logic if the menu is enabled
         *(((char*)scheduler) + 0xb) = menu_enable;
@@ -55,13 +69,6 @@ namespace Sandbox {
         }
     }
 
-    void testAction()
-    {
-        // Action to be performed when the action item is selected
-        // For example, you can print a message or perform some action here
-        OSReport("Test Action Triggered!\n");
-    }
-
     static bool testBool = false;
     static bool testBool2 = false;
     void Init(Plugin* plg)
@@ -70,10 +77,34 @@ namespace Sandbox {
         hook->getTrampoline(reinterpret_cast<void**>(&_renderPre));
 
         mainMenu = new (Heaps::Syringe) Menu;
-        mainMenu->title = "Main Menu";
-        mainMenu->description = "This is the main menu";
 
-        mainMenu->addItem(new BoolMenuItem("Test Option 1", &testBool));
-        mainMenu->addItem(new BoolMenuItem("Test Option 2", &testBool2));
+        MenuPage* homePage = new (Heaps::Syringe) MenuPage(mainMenu);
+        MenuPage* subMenu = homePage->createSubMenu();
+
+        // Home page
+        {
+            homePage->setTitle("Main Menu");
+            homePage->setDescription("This is the main menu");
+            homePage->setFooter("Use D-Pad Up/Down to navigate, Left/Right to change options");
+            homePage->addItem(new BoolMenuItem("Test Option 1", &testBool, "This is a test boolean option 1"));
+            homePage->addItem(new BoolMenuItem("Test Option 2", &testBool2, "This is a test boolean option 2"));
+            homePage->addItem(new MenuItemSubMenu("Test Sub Menu", subMenu, "Press A to enter the submenu"));
+            homePage->addItem(new BoolMenuItem("Test Option 3", &testBool2, "This is a test boolean option 3"));
+            homePage->addItem(new BoolMenuItem("Test Option 4", &testBool2, "This is a test boolean option 4"));
+        }
+
+        // Sub Menu
+        {
+            subMenu->setTitle("Sub Menu");
+            subMenu->setDescription("This is the sub menu");
+            subMenu->setFooter("Use D-Pad Up/Down to navigate, Left/Right to change options\nPress B to return to the previous menu");
+            subMenu->addItem(new BoolMenuItem("Sub Option 1", &testBool, "This is a test sub option 1"));
+            subMenu->addItem(new BoolMenuItem("Sub Option 2", &testBool2, "This is a test sub option 2"));
+            subMenu->addItem(new BoolMenuItem("Sub Option 3", &testBool2, "This is a test sub option 3"));
+            subMenu->addItem(new BoolMenuItem("Sub Option 4", &testBool2, "This is a test sub option 4"));
+            subMenu->addItem(new BoolMenuItem("Sub Option 5", &testBool2, "This is a test sub option 5"));
+        }
+
+        mainMenu->page = homePage;
     }
 }
