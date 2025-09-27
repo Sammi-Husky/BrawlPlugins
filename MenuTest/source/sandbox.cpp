@@ -15,14 +15,13 @@ using namespace SyringeCore;
 namespace Sandbox {
     static Menu* mainMenu = NULL; // Pointer to the main menu
 
-    static bool menu_enable = false;
     /**
      * @brief
      * Updates the menu enabled state based on the current button status.
      *
      * @returns whether this function processed the current inputs
      */
-    bool updateMenuEnabled()
+    bool updateMenuEnabled(Menu* menu)
     {
         static gfPadStatus status;
         g_gfPadSystem->getSysPadStatus(0, &status);
@@ -38,7 +37,7 @@ namespace Sandbox {
         u32 bits = status.m_buttonsHeld.bits | status.m_buttonsPressedThisFrame.bits;
         if ((bits & mask) == mask)
         {
-            menu_enable = !menu_enable; // Toggle the menu on/off
+            menu->toggle();
             return 1;
         }
 
@@ -56,13 +55,13 @@ namespace Sandbox {
         // If the menu was enabled this frame, the input has been handled
         // and we should return to prevent inputs from being processed
         // further down the chain
-        if (updateMenuEnabled())
+        if (updateMenuEnabled(mainMenu))
             return;
 
         // Pause the game logic if the menu is enabled
-        *(((char*)scheduler) + 0xb) = menu_enable;
+        *(((char*)scheduler) + 0xb) = mainMenu->isActive();
 
-        if (menu_enable)
+        if (mainMenu->isActive())
         {
             mainMenu->update(); // Update the main menu (input handling, etc.)
             mainMenu->render(); // Render the main menu if enabled
