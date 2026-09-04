@@ -22,12 +22,14 @@ namespace Syringe {
         "Sammi",                  // author
         Version("1.0.0"),         // version
         Version(SYRINGE_VERSION), // core version
-        &main,
+        &main,                    // entrypoint
         .FLAGS = {
-            .timing = TIMING_BOOT,
-            .loading = LOAD_PERSIST,
+            .loading = LOAD_UNLOAD,
             .heap = Heaps::Syringe,
-        }
+        },
+        // No scene names specified defaults to loading plugin at boot
+        // You may also simply provide "BOOT" as the first entry in the array.
+        { "scSelctCharacter", "scMenuMain" }
     };
 
     void main(Plugin* plg)
