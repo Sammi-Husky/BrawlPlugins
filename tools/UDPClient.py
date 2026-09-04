@@ -1,4 +1,4 @@
-import sys, socket, select, io
+import sys, socket, select, io, time
 import argparse
 
 class MyParser(argparse.ArgumentParser): 
@@ -26,15 +26,18 @@ if __name__ == "__main__":
         connected = False
         while not connected:
             print('Sending handshake.')
-            # Send to server using created UDP socket
-            sock.sendto(str.encode("Hello"), serverAddressPort)
             try:
+                sock.sendto(str.encode("Hello"), serverAddressPort)
                 reply, addr = sock.recvfrom(bufferSize)
                 if reply.decode('utf-8'):
                     connected = True
                 else:
                     print(f'recived {reply.decode("utf-8")}')
             except socket.timeout:
+                continue
+            except (ConnectionRefusedError, OSError):
+                print('Connection refused, retrying...')
+                time.sleep(1)
                 continue
 
         print('Entering loop.')
@@ -47,7 +50,12 @@ if __name__ == "__main__":
                 print('Client has disconnected')
                 connected = False
             if len(ready_to_read) > 0:
-                data = sock.recvfrom(bufferSize)
+                try:
+                    data = sock.recvfrom(bufferSize)
+                except (ConnectionRefusedError, OSError) as e:
+                    print(f'Connection error, reconnecting...')
+                    connected = False
+                    break
                 print(data[0].decode('utf-8'), end='')
                 if args.output != None:
                     f.write(data[0].decode('utf-8') + '\n')
